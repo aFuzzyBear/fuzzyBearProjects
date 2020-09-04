@@ -1,0 +1,42 @@
+*,::before,::after{
+    box-sizing:border-box;
+
+}
+
+html{
+ font-size: calc(1em+1vw);
+}
+:root{
+    /* Storing the Variables */
+    --base:#4C56A4;
+    --spacing: 10px;
+    --blur:10px;
+}
+
+img{
+    width: 80%;
+    padding: var(--spacing);
+    background: var(--base);
+    filter: blur(var(--blur));
+}
+
+body {
+    text-align: center;
+    background: #193549;
+    color: white;
+    font-family: 'helvetica neue', sans-serif;
+    font-weight: 100;
+    font-size: 50px;
+  }
+
+input {
+    width: 100px;
+  }
+
+.controls {
+    margin-bottom: 50px;
+  }
+
+.title2{
+    color:var(--base);
+}

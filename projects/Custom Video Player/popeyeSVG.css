@@ -1,0 +1,17 @@
+#pipe{
+    transform: rotate(-9deg);
+    animation: movePipe 3s alternate-reverse both infinite;
+    transform-box: fill-box;
+    transform-origin: bottom;
+    background-color: aqua;
+
+}
+@keyframes movePipe{
+    from{
+        transform: rotate(-10deg);
+    }
+    to{
+        transform:rotate(15deg);
+    }
+    
+}

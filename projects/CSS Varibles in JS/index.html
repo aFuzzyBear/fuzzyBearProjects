@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>CSS Variables in JavaScript</title>
+</head>
+<body>
+    <h2 class="title">
+        Updating CSS Variables with <span class="title2">JS</span>
+    </h2>
+    <div class="controls">
+        <label for="spacing" aria-label='spacing' >Spacing:</label>
+        <input type="range" name="spacing" id="spacingRange" 
+               min='0' max='220' value="10" data-sizeUnits="px" aria-controls="slider">
+
+        <label for="blur">Blur: </label>
+        <input type="range" name="blur" id="blurRange" 
+               min='0' max='25' value="10" data-sizeUnits="px">
+
+        <label for="base">Base Color:</label>
+        <input type="color" name="base" id="baseColor" value='#4C56A4'>
+
+        <img src="https://images.unsplash.com/photo-1596674561450-a993db2f312e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1276&q=80"
+         alt="Image of the ocean credit to Ibrahim Mushan @Unsplash" srcset="">
+    </div>
+</body>
+<script src="app.js"></script>
+</html>

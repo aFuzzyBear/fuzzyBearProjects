@@ -1,0 +1,45 @@
+*,::before,::after{
+    box-sizing: border-box;
+}
+html{
+    font-size: calc(1em+1vw);
+    height: 100%;
+    width: 100%;
+    background: url(starline-freepix.webp);
+    background-size: cover;
+    background-repeat: no-repeat;
+
+}
+.clock {
+    width: 30rem;
+    height: 30rem;
+    border: 20px solid #fdfdbe;
+    border-radius: 50%;
+    margin: 50px auto;
+    position: relative;
+    padding: 2rem;
+    box-shadow:
+    0 0 13px 15px rgba(0,0,0,0.1), 
+    inset 0 0 17px 3px #EFEFEF, 
+    inset 0 0 20px 0px black, 
+    0 0 10px 10px rgba(0,0,0,0.2);
+}
+
+  .clock-face {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: translateY(-3px); /* account for the height of the clock hands */
+  }
+
+  .hand {
+    width: 50%;
+    height: 6px;
+    background: #ffed01;
+    position: absolute;
+    top: 50%;
+    transform-origin: 100%;
+    transform: rotate(90deg);
+    transition: all 0.05s;
+    transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
+  }

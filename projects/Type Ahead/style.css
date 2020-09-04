@@ -1,0 +1,71 @@
+
+
+*,::before,::after{
+    box-sizing: border-box;
+
+}
+
+html{
+    width: 100vw;
+    height:100vh;
+    font-family: 'Montserrat', sans-serif;
+    background: #a2dcee;
+}
+
+.search-form{
+    width: 50vw;
+    margin:auto;
+}
+
+input{
+    padding:20px;
+}
+#search-input{
+    position: relative;
+    margin: 0 10%;
+    text-align: center;
+    outline: 0;
+    border: 10px solid cadetblue;
+    border-radius:10px;
+
+    width: 80%;
+
+    font-size: 1.25em;
+
+    box-shadow:0 0 5px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.19) ;
+}
+
+.results{
+    width: 78%;
+    position: relative;
+    margin: 0 auto;
+    padding:0;
+    list-style-type: none;
+
+}
+.results li{
+    display: flex;
+    justify-content: space-between;
+    padding:20px;
+    background: #479bb43a;
+    margin-bottom: 1vh;
+    border: 1px solid #479bb4;
+    border-radius: 5px;
+    transition: background 0.5s;
+    text-transform: capitalize;
+    
+}
+.results li:nth-child(even){
+    transform: perspective(100px) rotate(0.5deg) translateY(5px) scale(1.05);
+    background:  linear-gradient(to bottom, white 0%, #479bb43a  100%);
+}
+.results li:nth-child(odd){
+    transform: perspective(100px) rotate(-0.5deg) translateY(5px) scale(1.025);
+    background:  linear-gradient(to bottom, white 0%, #479bb43a  100%);
+}
+span.population {
+    font-size: 15px;
+  }
+span.highlighter{
+    background:lime;
+}

@@ -1,0 +1,100 @@
+*,::before,::after{
+    box-sizing: border-box;
+    /* border: 1px dashed red; */
+
+    margin: 0;
+}
+:root{
+    
+    overflow: hidden;
+    width: 100%;
+}
+html{
+    background-color: cornflowerblue;
+    font-family: 'Lemonada', cursive;
+    /* Responsiveness */
+    font-size: calc(0.5em + 0.5vw);
+    
+}
+
+.panels-container{
+    display: flex;
+    min-width: 100%;
+    height: 100vh;
+}
+.panel{
+    height: 100%;
+    /* Setting up the Flex Box */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    flex:1;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.5em;
+    /* Background Properties */
+    background-size: cover;
+    background-position: center;
+    /* Transitions */
+    transition: 
+    font-size 0.7s cubic-bezier(0.6, -0.28, 0.735, 0.045),
+    flex 0.7s cubic-bezier(0.6, -0.28, 0.735, 0.045),
+    background 0.2s;
+}
+
+.panel1{background-image: url(images/Scotland-skye-stunning.webp);}
+.panel2{background-image: url(images/scotland-spring_1.webp);}
+.panel3{background-image: url(images/scotland_summer_1.webp);}
+.panel4{background-image: url(images/scotland-autumn_1.webp);}
+.panel5{background-image: url(images/Scotland-Eilean-Donan-Castle-Winter_1.webp);}
+
+.panel > *{
+    /* Flex Items */
+    margin:0;
+    width: 100%;
+    transition: transform 0.5s;
+    flex:1 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: rgb(55, 44, 99);
+
+}
+.panel > *:first-child{transform: translateY(-100%);}
+.panel.open-active > *:first-child{transform: translateY(0%);}
+
+.panel > *:last-child{transform: translateY(100%);}
+.panel.open-active > *:last-child{transform: translateY(0%);}
+
+.panel.open-active > p{
+    display: table;
+    flex-wrap: wrap;
+    height: 1.5rem;
+    background-color:rgba(131, 122, 110, 0.568);
+    text-align: center;
+    height: fit-content;
+
+    
+}
+.panel p:nth-child(2){
+    font-size: 1.75em;
+    color: blue;
+}
+
+.panel.open{
+    flex:5;
+    font-size: 2.25em;
+}
+@media only screen and (max-width: 600px){
+    :root{
+        min-width: 310px;
+        
+    }
+
+    .panel p{
+        font-size: 0.45em;
+    }
+}
