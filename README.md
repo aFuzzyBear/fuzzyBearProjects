@@ -33,3 +33,5 @@ Here is a [link to the page](/fuzzyBearProjects/projects/Custom%20Video%20Player
 I am a drummer, and I particularly enjoyed this project. Building a drum machine would of felt like a complex task. But the project set out a very straight forward approach to the task. 
 
 Here is a [link to the page](projects/Drum%20Kit/drumkit.html)
+Here is a [link to the page](projects/Drum%20Kit/drumkit.html)
+Here is a [link to the page](projects/Drum%20Kit/drumkit.html)
