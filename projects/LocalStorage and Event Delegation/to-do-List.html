@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="output.css">
+    <title>
+        Local Storage and Event Delegation
+    </title>
+</head>
+<body>
+    <div class="wrapper">
+        <h2>To-Do List</h2>
+        <p></p>
+        <ul class="list">
+            <li class="item">Loading Check-list</li>
+
+        </ul>
+        <form class="form">
+           
+            <input type="text" 
+                   name="item" 
+                   id="checklist-item" 
+                   spellcheck="true"
+                   placeholder="Enter Item"
+                   autocomplete="none"
+                   required
+                   
+                   >
+           
+            <div class="form-btns">
+                <button type="submit" class="btn-addItem">Add Item</button>
+                <button type="reset" class="btn-clearList">Clear List</button>
+            </div>
+        </form>
+    </div>
+</body>
+<script src="script.js"></script>
+</html>
