@@ -13,7 +13,7 @@
 body {
   width: 100vw;
   height: 100vh;
-  background-image: url("pattern (1).svg");
+  background-image: url("background.svg");
   background-position: center;
   background-repeat: repeat-y;
   overflow-x: hidden;
