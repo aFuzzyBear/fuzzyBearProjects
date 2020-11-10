@@ -113,7 +113,7 @@ class GameModel{
         this.asteroidField = []
        
         /**@this this.lives - Number of game lives*/
-        this._lives = Number(1)
+        this._lives = Number(5)
         
 
         
