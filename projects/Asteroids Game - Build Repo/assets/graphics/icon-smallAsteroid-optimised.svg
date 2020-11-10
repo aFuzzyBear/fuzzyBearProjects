@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="41.205mm" height="47.672mm" version="1.1" viewBox="0 0 41.205 47.672" xmlns="http://www.w3.org/2000/svg">
+ <title>Small Asteroid Icon Vector Graphic</title>
+ <g transform="translate(-21.028 -50.025)">
+  <path id="icon-smallAsteroid" transform="matrix(.6094 0 0 .57265 -42.425 -29.062)" d="m154.67 202.55c-1.2036 1.0941-25.346-11.144-26.741-11.728-1.3952-0.58393 11.499 29.734 10.158 29.275s-26.259-6.9298-27.693-8.16c-1.4336-1.2302 0.10715-15.809-0.51981-16.872s-3.2746-0.94382-4.2301-2.7231 1.1965-8.9728 1.0682-10.038c-0.12832-1.0655 12.234-15.037 13.714-15.364s-11.459-14.48-9.5873-14.254 9.2372-11.963 10.166-13.202c0.9284-1.2384 4.4957 7.0069 5.3787 7.868 0.88295 0.86117 37.412 22.885 38.837 22.988s3.817 15.489 4.8377 16.826c1.0206 1.3372-0.29075 5.1954-1.1061 6.8507s-13.079 7.4405-14.283 8.5346z" fill="none" opacity=".8" stroke="#BADA55" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5082" style="paint-order:markers stroke fill"/>
+ </g>
+</svg>

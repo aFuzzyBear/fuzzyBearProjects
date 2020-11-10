@@ -1,0 +1,335 @@
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html {
+  font-size: calc(0.5em + 0.5vmin);
+}
+
+body {
+  width: 100%;
+  height: -webkit-max-content;
+  height: -moz-max-content;
+  height: max-content;
+  background-color: black;
+  overflow: none;
+}
+
+@font-face {
+  font-family: 'hyperspace';
+  src: url(assets/fonts/hyperspace/Hyperspace.otf) format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Trispace';
+  src: url(assets/fonts/Trispace/Trispace-VariableFont_wdth\,wght.ttf) format("TrueType");
+  font-display: swap;
+}
+
+.container-parent {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: minmax(5%, 18%) minmax(200px, 1fr) minmax(5%, 18%);
+      grid-template-columns: minmax(5%, 18%) minmax(200px, 1fr) minmax(5%, 18%);
+  -ms-grid-rows: 100%;
+      grid-template-rows: 100%;
+  -ms-grid-columns: "left-column" "center-column" "right-column";
+      grid-template-columns: "left-column" "center-column" "right-column";
+  height: 100%;
+}
+
+.container-arcade {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[1];
+      grid-template-columns: repeat(1, 1fr);
+  -ms-grid-rows: 20vh 70vh 10vh;
+      grid-template-rows: 20vh 70vh 10vh;
+  gap: 0px 0px;
+      grid-template-areas: "panel-top panel-top panel-top panel-top panel-top" "panel-center panel-center panel-center panel-center panel-center" "panel-console panel-console panel-console panel-console panel-console";
+}
+
+.panel-top {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  -ms-grid-column-span: 5;
+  grid-area: panel-top;
+}
+
+.panel-center {
+  -ms-grid-row: 2;
+  -ms-grid-column: 1;
+  -ms-grid-column-span: 5;
+  grid-area: panel-center;
+}
+
+.panel-console {
+  -ms-grid-row: 3;
+  -ms-grid-column: 1;
+  -ms-grid-column-span: 5;
+  grid-area: panel-console;
+  margin-top: 0.5rem;
+}
+
+.panel-bottom {
+  grid-area: panel-bottom;
+}
+
+.panel-left, .panel-right {
+  width: 100%;
+  height: 100vh;
+  background-color: black;
+}
+
+.panel-top {
+  height: auto;
+  background-image: url(assets/graphics/asteroids-artwork-top-panel-replaced.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-size: clamp(50%, 70%, 70%);
+  background-color: black;
+}
+
+.panel-left {
+  background-image: url(assets/graphics/asteroids-artwork-left-side-panel-optimised.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.panel-right {
+  background-image: url(assets/graphics/asteroids-artwork-right-side-panel-optimised.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.container-game {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.gameLayer {
+  height: 100%;
+}
+
+.gameLayer #gameCanvas {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  -webkit-box-shadow: 0px 3px 6px 0px #2f2e2e, 0px 3px 4px 1px #7b7b7b;
+          box-shadow: 0px 3px 6px 0px #2f2e2e, 0px 3px 4px 1px #7b7b7b;
+  border-radius: 20px;
+}
+
+.container-score {
+  position: relative;
+  top: 1rem;
+  z-index: 1;
+  height: 0;
+  color: gold;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  text-align: center;
+  font-family: 'hyperspace';
+  font-size: 2rem;
+  font-weight: 600;
+  padding-left: 2rem;
+  padding-right: 1rem;
+}
+
+.container-score > p {
+  display: inline-block;
+}
+
+.container-guide {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  font-family: 'Trispace';
+  color: gold;
+}
+
+.container-guide .guide-howToPlay {
+  width: 42.5%;
+  border-right: 2px dashed gray;
+  padding: 0.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.container-guide .guide-controls {
+  width: 33%;
+  text-align: center;
+}
+
+.js-output {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  color: gold;
+  font-family: 'hyperspace';
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
+  -ms-flex-line-pack: center;
+      align-content: center;
+}
+
+.js-output > .credits {
+  color: gold;
+  font-family: 'Trispace';
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  position: absolute;
+  bottom: 0;
+  right: 1%;
+}
+
+.js-output.hide {
+  display: none;
+}
+
+.js-output .title-wrapper {
+  margin: 1rem 0;
+}
+
+.js-output .highScoresDisplay {
+  margin: 10rem 0 0 4rem;
+  width: auto;
+  font-size: 3rem;
+  list-style-position: outside;
+  background-color: #0b0b0b33;
+}
+
+.js-output .highScoresDisplay .highScoresTable {
+  display: inline-block;
+}
+
+.js-output .newHighScore {
+  margin: auto;
+  padding: 1rem;
+}
+
+.js-output .newHighScore > .form-wrapper input#input-playerName {
+  width: 60%;
+  height: 4rem;
+  border: none;
+  border-bottom: 4px solid gold;
+  background-color: rgba(62, 62, 62, 0.4);
+  text-align: center;
+  color: gold;
+  letter-spacing: 0.3em;
+  font-size: 2rem;
+}
+
+.js-output .newHighScore > .form-wrapper button {
+  width: auto;
+}
+
+.js-output button {
+  height: 3rem;
+  padding: 0 0.4rem;
+  background: gold;
+  border: none;
+  border-radius: 8px;
+  color: black;
+  font-family: 'Trispace';
+}
+
+.js-output .btn-restart {
+  width: 30%;
+  margin: auto;
+}
+
+.break-row {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+  height: 0;
+}
+
+.container-controls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  border-right: 2px dashed gray;
+  width: 15%;
+}
+
+.container-controls > .controls {
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+  font-size: 1.3em;
+  border: solid #373777;
+  border-width: 2px 4px 9px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0 5px;
+}
+
+.container-iconography {
+  width: 42.5%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-line-pack: end;
+      align-content: flex-end;
+}
+
+.container-iconography .icon-wrapper {
+  width: -webkit-min-content;
+  width: -moz-min-content;
+  width: min-content;
+  text-align: center;
+}
+
+.container-iconography .icon-largeAsteroid {
+  width: 7rem;
+  height: 5rem;
+}
+
+.container-iconography .icon-mediumAsteroid {
+  width: 7rem;
+  height: 4rem;
+}
+
+.container-iconography .icon-smallAsteroid {
+  width: 3rem;
+  height: 4rem;
+  -webkit-transform: rotate(70deg);
+          transform: rotate(70deg);
+}
+/*# sourceMappingURL=asteroidsStylesheet.css.map */
