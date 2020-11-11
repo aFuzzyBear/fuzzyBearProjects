@@ -12,58 +12,63 @@ const canvas = document.getElementById('gameCanvas');
  * @type {CanvasRenderingContext2D} 
  */
 const ctx = canvas.getContext('2d');
-console.log(ctx)
 
 /**
- * @var gameContainer - Game Container Element
+ * @constant gameContainer - Game Container Element
  * @type {HTMLBodyElement}
  */
 const gameContainer = document.querySelector('.gameLayer');
 /**
- * @var gameContainer - JS Output Container Element
+ * @constant outputDisplay - JS Output Container Element
  * @type {HTMLBodyElement}
  */
 const outputDisplay = document.querySelector('.js-output')
+/**
+ * @constant highScoresTable - Creating a Order List Element on the Dom to Store the High Scores
+ * @type {HTMLBodyElement}
+ */
 const highScoresTable = document.createElement('ol')
-highScoresTable.classList.add('highScoresTable')
 
+highScoresTable.classList.add('highScoresTable') // Applying a class to the Element
 
 /**
- * @var scoreDisplay - Displays the Score on the DOM
+ * @constant scoreDisplay - Displays the Score on the DOM
  * @type {HTMLBodyElement}
  */
 const scoreDisplay = document.getElementById('score');
 /**
- * @var scoreDisplay - Displays the Score on the DOM
+ * @constant scoreDisplay - Displays the Score on the DOM
  * @type {HTMLBodyElement}
  */
 const currentHighScoreDisplay = document.getElementById('highScore');
 /**
- * @var livesDisplay - Displays the Score on the DOM
+ * @constant livesDisplay - Displays the Score on the DOM
  * @type {HTMLBodyElement}
  */
 const livesDisplay = document.getElementById('lives');
 
+
+// Global Functions
 /**
- * @function RandomNumber Generator
+ * @function RandomNumber - Random Number Generator 
  * @param {Number} min -Lowest Number in Range
  * @param {Number} max  - Highest Number in Range
- * @returns Random Number between the range of min - max
+ * @returns Random Whole Number (Integers) between the range of min - max
  */
 function randomNumber(min,max){
     return Math.floor(Math.random()*Math.floor(max-min) + min)
 }
 
 /**
- * @function randomNumberDecimal Number
- * @returns Random Decimal number fixed to 4 decimal places. 
+ * @function randomNumberDecimal - Random Decimal Generator
+ * @returns Random Decimal (Floating Point) number fixed to 4 decimal places. 
  */
 function randomNumberDecimal(){
     return +Math.random().toPrecision(4)
 }
 /**
  * @function convertRadians
- * @param {Number} degrees in Decimal
+ * @param {Number} degrees in decimal
  * @returns Degrees in Radians
  */
 function convertRadians(degrees){
@@ -94,61 +99,62 @@ function distanceBetweenPoints(x1, y1, x2, y2) {
  * @param {Number} y2 - Y - Co-ordinate of the Secondary Object
  * @param {Number} r2 - R - Co-ordinate of the radius of the second Object 
  * @returns 
- * Returns the distance between two circles 
+ * Returns the distance between the center of two circles 
  */   
 function distanceBetweenCircles(x1,y1,r1,x2,y2,r2){
     return Math.ceil(Math.sqrt((x2 - x1)**2 + (y2-y1)**2) - (r2+r1))
 }
 
 
+/**
+ * @class GameModel 
+ * @classdesc Game Settings and methods are defined within the scope of this class. Here we place the primitive values that would be referenced throughout the game. 
+ */
 class GameModel{
     constructor(){
         /**@this this.FPS - Frames per Second */
         this.FPS = Number(60)
-        
-        /**@this this.SHOW_BOUNDING - Displays bounding box */
-        this.SHOW_BOUNDING = Boolean(false)
       
         /**@this this.AsteroidArray - Array which would contain the asteroids in the asteroid field */
         this.asteroidField = []
        
-        /**@this this.lives - Number of game lives*/
-        this._lives = Number(1)
         
-
         
         /**@this this.currentScore - Keeps track of the score */
         this.currentScore = Number(0)
-       
+        
+        /**@this this.highScoresFromStorage - Obtains the HighScores from the LocalStorage API, if present would return an array of object's each containing a record of the highscores, if not the it would present null */
         this.highScoresFromStorage = (localStorage.getItem('highScores'))?[...JSON.parse(localStorage.getItem('highScores'))] : null
        
+        /**@this this.previousHighScore - Takes the previous games highest score if available, else it would return 0 */
         this.previousHighScore = (this.highScoresFromStorage) ? this.highScoresFromStorage[0].score : 0 
        
-        this._playerName = String()
-
-
         /**@this this.shipExploding - Registers a flag if the ship is exploding */
         this.shipExploding = false
+        
+        /**@this this.lives -**PRIVATE** Number of game lives*/
+        this._lives = Number(1)
+
+        /**@this this._playerName - **PRIVATE** stores the players name */
+        this._playerName = String()
 
         /**
-        * @this this._width - Private width variable that would store the size of the window width
+        * @this this._width - **PRIVATE** width variable that would store the size of the window width
         */
         this._width = Number();
        
         /**
-         * @this this._height - Private Height variable that would store the height of the window
+         * @this this._height - **PRIVATE** Height variable that would store the height of the window
          */
         this._height= Number();
         
-        /**
-         * Calls the getCanvasDimensions method
-         */
-        this.getCanvasDimensions();
        
+        
         //Getting the Width and Height as soon as the Window loads
         window.addEventListener('load',()=>{
             this.getCanvasDimensions()
         })
+        this.getCanvasDimensions();//Just to make sure
        
         //As the window is resized we are getting the new Canvas Dimensions
         window.addEventListener('resize',()=>{
@@ -156,7 +162,8 @@ class GameModel{
         })
        
     }
-    
+    //Getters
+
     /**
      * @this this.width - Returns the width of the canvas
      */
@@ -179,11 +186,22 @@ class GameModel{
         return +this._lives.toFixed(0)
     }
 
+    //Methods
+
+    /**
+     * @method checkScore 
+     * @description Checks if the current score is greater than the previous score, Switching the *view.newHighScore* to true
+     */
     checkScore(){
         if(this.currentScore > this.previousHighScore){
             view.newHighScore = true
         }
     }
+    
+    /**
+     * @method addScore
+     * @description Creates a record of the new high score and captures the players name as well. It then stores it to the LocalStorage and repopulates the High Score Table
+     */
     addScore(){
         let name = this._playerName
         let score = this.currentScore
@@ -204,24 +222,39 @@ class GameModel{
         this.populateHighScoresList(storageArray,highScoresTable)
 
     }
+
+    /**
+     * @method playerName
+     * @description captures the playerName as the input value changes
+     */
     playerName(){
        let input = document.querySelector("#input-playerName")
-        
+
        return this._playerName = input.value
-        
     }
+
+    /**
+     * @method populateHighScoresList 
+     * @param {Array} scoresArray 
+     * @param {HTMLOListElement} DOMList 
+     * @description Maps a record of the scores as HTML List item's to the HTML Ordered List Element 
+     */
     populateHighScoresList(scoresArray = [], DOMList){
         DOMList.innerHTML = scoresArray.map((record)=>{
             return `
             
             <li class="scoreEntry">
-                <span class="scoreEntry-Name">${record.name} </span><span class="scoreEntry-Score">${record.score} </span>
+            <span class="scoreEntry-Name">${record.name} </span><span class="scoreEntry-Score">${record.score} </span>
             </li>
-
+            
             `
         }).join('');
+        //😎
     }
-    
+    /**
+     * @method getCanvasDimensions
+     * @description Obtains the Width and Height of the canvas respective to the viewport and the device's own pixel density. This is to provide accurate values for rendering the elements ont he canvas
+     */
     getCanvasDimensions() {
         // Width is determined by the css value for the viewport width this is then respected by the device pixel ratio. This is then used to set the canvas.width value
         this._width = Math.round((Number(getComputedStyle(canvas).getPropertyValue('width').slice(0,-2))/devicePixelRatio) * devicePixelRatio);
@@ -234,10 +267,13 @@ class GameModel{
         canvas.height = this._height
         
     }
-    
+    /**
+     * @method createNewSpaceShip
+     * @description Creates a new Spaceship 🚀 object 
+     */
     createNewSpaceShip(){
         if(spaceship){
-            //Delete the existing spaceship
+            //Delete the existing spaceship from the global reference
             spaceship = null;
             
         }
@@ -257,10 +293,15 @@ class GameModel{
          model.shipExploding = false
          //Make it so the ship is stationary on reload
          newSpaceship.thrusting =false
+        //  Replace the Spaceship with the newly created object
         return spaceship = newSpaceship;
     }
 
-
+    /**
+     * @method createAsteroidField 
+     * @param {Number} numberOfAsteroids 
+     * @description Create the asteroid field based on the number of asteroids requested, by populating the asteroid array with objects of asteroids containing their respective geometries, position and vectors.
+     */
     createAsteroidField(numberOfAsteroids){
         
         //clear the existing array
@@ -289,18 +330,29 @@ class GameModel{
         }
         return this.asteroidField
     }
-
+    /**
+     * @method createAsteroidField
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} r 
+     * @param {Number} asteroidIndex 
+     * @description Creates a new asteroid object including the geometry of each asteroid, making a random polygon that varies in it apparent smoothness
+     */
     createNewAsteroid(x,y,r,asteroidIndex){
         let asteroid = new AsteroidObject(x,y,r,asteroidIndex);
-        //Setting the values for the asteroids jaggedness
+        //Setting the values for the asteroids polygons
         for(let offset = 0; offset < asteroid.vertices; offset++ ){
             asteroid.offsets.push(
                Math.random() * asteroid.jaggedness * 2 + 1 - asteroid.jaggedness
             )
         }
-        return asteroid
+        return asteroid 
     }
-
+    /**
+     * @method destroyAsteroid
+     * @param {Number} index 
+     * @description Destroys the asteroid and spawns two more smaller in its place. It also adds values respective to the size of the asteroid to the current score. 
+     */
     destroyAsteroid(index){
         //Getting Asteroid Properties
         let x = this.asteroidField[index].x;
@@ -335,7 +387,11 @@ class GameModel{
        }
        
     }
-    
+    /**
+     * @method screenEdges
+     * @param {Object} obj 
+     * @description Handles the edges of the screen as objects pass from one end and it would cause them to appear in the opposite side of the frame relative to their entry point. 
+     */
     screenEdges(obj){
         if(obj.x < 0 - obj.r){
             obj.x = this.width + obj.r
@@ -355,7 +411,11 @@ class GameModel{
 
 //creating a shared object class between asteroids and spaceship
 
-class GameObject{
+/**
+ * @class Basic Object
+ * @classdesc a shared object class between ship and asteroid, 
+ */
+class BasicObject{
     /**
      * 
      * @param {Number} x - Position of Object on X - Axis 
@@ -384,11 +444,13 @@ class GameObject{
     }
 }
 
-//Creating a spaceship Class
-
-class ShipObject extends GameObject{
+/**
+ * @class ShipObject @extends BasicObject
+ * @classdesc 🚀 Object literal containing the values and methods that pertains to the model of the Spaceship 
+ */
+class ShipObject extends BasicObject{
     /**
-     * 
+     * @constructor
      * @param {Number} x - Position of Object on X - Axis 
      * @param {Number} y - Position of Object on Y - Axis
      * @param {Number} r - Radius of the Object
@@ -398,6 +460,7 @@ class ShipObject extends GameObject{
      * @param {Object} thrust - Object contains the thrust vectors for the Ship
      */
     constructor(x,y,r,a,rot,thrusting,thrust){
+        /**@extends BasicObject */
         super(x,y,r,a)
      
         /**
@@ -405,22 +468,24 @@ class ShipObject extends GameObject{
          */
         this.rot = convertRadians(rot);//Converted it into Radians
      
+        /** 
+         * @this this.thrust - Provides a vector for the spaceship when travelling
+         */
+        this.thrust = {...thrust};
+
+        //Ship Flags
         /**
          * @this this.thrusting - Boolean Flag! True when the spaceship trust is active
          */
         this.thrusting = Boolean(thrusting);
-     
-        /** 
-         * @this this.thrust - Provides a vector for the spaceship when travelling
-        */
-        this.thrust = {...thrust};
         
         /**@this this.immune - Immunity from Explosions Flag */
         this.immune = Boolean(false)
        
-        // Laser Properties
         /**@this this.laserStatus - Flag - Registers if the laser is active shooting ON or OFF  */
         this.laserStatus = Boolean(true);
+        
+        // Laser Properties
 
         /**@this this.laserArray - Array Element that would store each laser object as they are fired */
         this.laserArray = Array();
@@ -429,6 +494,7 @@ class ShipObject extends GameObject{
         this.laserDistance = 0.5 
         
         // ShipObject's Constants
+
         /**
          * @this this.SHIP_SIZE 
          * @description CONSTANT: Height of the spaceship in px's - Same as the Radius
@@ -449,16 +515,21 @@ class ShipObject extends GameObject{
      
         /**
          * @this this.TURN_DEG
-         * @description CONSTANT: This is the turning angle in 360deg/sec. 
+         * @description CONSTANT: This is the turning angle of the ship in 360deg/sec. 
          */
         this.TURN_DEG = Number(360); // Turns in deg/sec
 
 
     }
+    //Methods
 
+    /**
+     * @method draw 🎨
+     * @description Contains the instructions to draw the 🚀 on the canvas
+     */
     draw(){
         if(this.immune){
-            //Make the Spaceship golden
+            //Make the Spaceship golden 
             ctx.strokeStyle = "gold";
             ctx.fillStyle = "gold"
         }else{
@@ -552,7 +623,10 @@ class ShipObject extends GameObject{
         model.screenEdges(this)
         
     }
-
+    /**
+     * @method explodeShip 💣
+     * @description Contains the instructions to draw the explosion of the ship on the canvas, It also instructs to reduce the lives counter upon impact
+     */
     explodeShip(){
         //Prevent the ship from moving
        if(!this.immune){ 
@@ -589,7 +663,10 @@ class ShipObject extends GameObject{
         //Reduce the Life 
         model._lives -= (1/model.FPS)
     }
-
+    /**
+     * @method drawLaser 🎨
+     * @description contains the instructions to draw the laser on the canvas
+     */
     drawLasers(){
         //Applying the lasers
         //Looping backwards through the laser array
@@ -619,7 +696,7 @@ class ShipObject extends GameObject{
             laser.y += laser.vY
 
             //Handling the edge of screen adjustments for the laser
-            //Slightly different to the screenEdges function
+            //Slightly different to the model.screenEdges function
             
             if(laser.x < 0){
                 laser.x = model.width
@@ -634,11 +711,15 @@ class ShipObject extends GameObject{
            
         })
     }
+    /**
+     * @method shootLasers 🌠
+     * @description Provides the instruction on creating each individual laser as it is shot from the ship
+     */
     shootLasers(){
         //create the laser object
-        /**@var LASER_SPEED - Speed of the Laser in px/sec*/
+        /**@constant LASER_SPEED - Speed of the Laser in px/sec*/
         const LASER_SPEED = 300
-        /**@var LASER_MAX - Maximum number of laser objects that can be created */
+        /**@constant LASER_MAX - Maximum number of laser objects that can be created */
         const LASER_MAX = 25 
         
         if(this.laserStatus && this.laserArray.length < LASER_MAX){
@@ -686,8 +767,11 @@ class ShipObject extends GameObject{
 }
 
 
-
-class AsteroidObject extends GameObject {
+/**
+ * @class AsteroidObject  @extends BasicObject
+ * @classdesc Object literal containing the values and methods that pertains to the model for each  Asteroid object 🌚
+ */
+class AsteroidObject extends BasicObject {
     constructor(x,y,r,asteroidIndex){
         super(x,y,r)
         /**@this this.a - returns a random angle in radians */
@@ -705,7 +789,10 @@ class AsteroidObject extends GameObject {
         /**@this this.asteroidIndex - Asteroid Index position in the Array */
         this.asteroidIndex = Number(asteroidIndex);
     }
-
+    /**
+     * @method draw 🎨
+     * @description Contains the instructions to draw the 🌚 on the canvas
+     */
     draw(){
         //Draw Asteroids
         ctx.strokeStyle = '#BADA55';
@@ -744,7 +831,10 @@ class AsteroidObject extends GameObject {
 
         
     }
-
+    /**
+     * @method asteroid2asteroidCollision 🌒↔🌚*🌚↔🌘
+     * @description Preforms a form of soft ricochet between each asteroid if they happen to collide with each others radial distance from its center. 
+     */
     asteroid2asteroidCollision(){
         let currentAsteroid = this;
         model.asteroidField.forEach((otherAsteroid)=>{
@@ -763,7 +853,10 @@ class AsteroidObject extends GameObject {
             }
         })
     }
-
+    /**
+     * @method asteroid2asteroidCollision 
+     * @description Registers that the 🚀 has collided with the 🌑 
+     */
     asteroid2shipCollision(){
         if(distanceBetweenPoints(this.x,this.y,spaceship.x,spaceship.y) < spaceship.r + this.r && !spaceship.immune){
             // register that the ship is exploding 
@@ -860,8 +953,9 @@ class GameView{
            view.startRaF= requestAnimationFrame(startAnimationLoop)
     
         }
-        cancelAnimationFrame(view.end)
-        cancelAnimationFrame(view.game)
+        // cancelAnimationFrame(view.startRaF)
+        cancelAnimationFrame(view.gameRaF)
+        cancelAnimationFrame(view.endRaF)
         requestAnimationFrame(startAnimationLoop)
     }
     gameScreen(){
@@ -885,6 +979,7 @@ class GameView{
          
          cancelAnimationFrame(view.startRaF)
          cancelAnimationFrame(view.gameRaF)
+         cancelAnimationFrame(view.endRaF)
          requestAnimationFrame(view.gameAnimationLoop)
         
     }
@@ -895,22 +990,24 @@ class GameView{
         ctx.fillRect(0,0,model.width,model.height);
 
     
-        if(!model.shipExploding) {
+       if(spaceship){ 
+           if(!model.shipExploding) {
             spaceship.draw()  
             
-        }else{
-            spaceship.explodeShip();
+            }else{
+                spaceship.explodeShip();
 
-            //Timeout's to carry out these functions after a certain period of time.        
-            setTimeout(model.createNewSpaceShip,1000)
-            
-            setTimeout(()=>{
-            //Removing the ships immunity after 5 secs
-                spaceship.immune = false
-            
-            },5000)
+                //Timeout's to carry out these functions after a certain period of time.        
+                setTimeout(model.createNewSpaceShip,1000)
+                
+                setTimeout(()=>{
+                //Removing the ships immunity after 5 secs
+                    spaceship.immune = false
+                
+                },5000)
 
-        } 
+            } 
+        }
 
         if(model.asteroidField.length === 0) model.createAsteroidField(randomNumber(3,7))
         //Drawing each asteroid on the screen
@@ -1052,8 +1149,11 @@ class GameView{
         window.removeEventListener('mousedown',controller.removeDefault)
         window.removeEventListener('keydown',controller.removeDefault)
         btnRestart.addEventListener('click',()=>{
-            window.location.reload()
+            //Reload the window to reset the game 
+            controller.restart()
         })
+
+        
         function endAnimationLoop(){
             cancelAnimationFrame(view.startRaF)
             cancelAnimationFrame(view.gameRaF)
@@ -1095,21 +1195,31 @@ class GameController{
         
         switch(event.code){
             case "ArrowUp":
+                event.preventDefault()
+                spaceship.thrusting = true
+                break
             case "KeyW":
                 //Start Ship Thrusting
                 spaceship.thrusting = true
                 break
             case "ArrowRight":
+                event.preventDefault()
+                spaceship.rot = -convertRadians(spaceship.TURN_DEG) / model.FPS
+                break
             case "KeyD":
                 //Rotate Ship Anti-Clockwise
                 spaceship.rot = -convertRadians(spaceship.TURN_DEG) / model.FPS
                 break
-                case "ArrowLeft":
-                case "KeyA":
+            case "ArrowLeft":
+                event.preventDefault()
+                spaceship.rot = convertRadians(spaceship.TURN_DEG) / model.FPS
+                break
+            case "KeyA":
                 //Rotate Ship Clockwise
                 spaceship.rot = convertRadians(spaceship.TURN_DEG) / model.FPS
                 break
             case "Space":
+                event.preventDefault()
                 //shoot laser
                 spaceship.shootLasers();
                 break
@@ -1144,18 +1254,37 @@ class GameController{
         }
     }
 
+    restart(){
+        // Clearing the previous game data
+        model = null
+        
+        livesDisplay.innerText = ''
+        scoreDisplay.innerText = ''
+        currentHighScoreDisplay.innerText = ''
+        //re-instantiating the game model 
+        
+        model = new GameModel()
+        
+        
+        view.startScreen()
+    }
+    onLoad(){
+        
+        model = new GameModel()
+        
     
+        return view.startScreen()
+    }
    
     
 }
 //Global Scope
-let spaceship;
-
-let model = new GameModel()
+let spaceship,model
 
 let view = new GameView()
+
 
 let controller = new GameController()
 
 
-view.startScreen()
+window.addEventListener('load',controller.onLoad())
