@@ -48,6 +48,7 @@ const currentHighScoreDisplay = document.getElementById('highScore');
 const livesDisplay = document.getElementById('lives');
 
 
+
 // Global Functions
 /**
  * @function RandomNumber - Random Number Generator 
@@ -314,7 +315,7 @@ class GameModel{
         for(let index = 0; index< numberOfAsteroids; index++){
             x = randomNumber(0,this.width)
             y = randomNumber(0,this.height)
-            r = randomNumber(60, 100);
+            r = (controller.isMobile)?randomNumber(30,50): randomNumber(60, 100);
             //Registering the asteroids Index - done purely for debugging reasons
             i = index
 
@@ -575,7 +576,7 @@ class ShipObject extends BasicObject{
         );
         ctx.fill();//Fill in the Shape
         ctx.closePath();//Finishes of the Triangle
-        ctx.stroke();
+        ctx.stroke();//Draws it out on the canvas
 
         if(this.thrusting){
             //Add Thrust vectors 
@@ -660,7 +661,7 @@ class ShipObject extends BasicObject{
         ctx.arc(this.x,this.y, this.r + 2, 0, Math.PI * 2, false);
         ctx.fill();
         ctx.stroke();
-        //Reduce the Life 
+        //Reduce the Life 💀
         model._lives -= (1/model.FPS)
     }
     /**
@@ -869,51 +870,85 @@ class AsteroidObject extends BasicObject {
 
 class GameView{
     constructor(){
+        //Flags used for debugging...
         this.start = false
         this.game = false
         this.end = false
+
+        /**
+         * @this this.newHighScore - Flag for if a new high Score is set to record a view change from winners text to game over display
+         */
         this.newHighScore = false
        
+       //RequestAnimationFrames reference numbers
+       /**@this this.startRaF - Registers the RequestAnimationFrame number for the start screen */ 
        this.startRaF
+       /**@this this.gameRaF - Registers the RequestAnimationFrame number for the game screen*/ 
        this.gameRaF    
+       /**@this this.endRaF - Registers the RequestAnimationFrame number  for the end screen*/ 
        this.endRaF
 
 
        
+       
     
     }
     //Methods
+    /**
+     * @method startScreen
+     * @description Contains the contextual information for the visual information to be displayed on the screen
+     */
     startScreen(){
+        //Registering the Start Screen-debugging purpose
         this.start = true
+        
         //Block scope
+        //Creating an asteroid Field
+        if(controller.isMobile) {
+            //Reducing the number of asteroids to prevent screen clutter on lower sizes
+            model.createAsteroidField(randomNumber(2,6))
+        }else{
+            model.createAsteroidField(randomNumber(5,13))
+        }
+
         
-        model.createAsteroidField(10)
-        
-        // titleImg
+        // Getting the Title screen Image
         
         let titleImg = new Image();
         titleImg.src = './assets/graphics/asteroids-arcade-game-logo-sticker.svg'
+        /**
+         * @function getImgSize
+         * Applies a scaling ratio to the image height and width to work with the canvas.
+         */
         function getImgSize(){
             let scale = Math.min(model.width/titleImg.width, model.height/titleImg.height)*devicePixelRatio
             titleImg.width = titleImg.width/scale
             titleImg.height = titleImg.height/scale
     
         }
-        document.addEventListener('resize',getImgSize)
+        document.addEventListener('resize',getImgSize) // This is to keep Image responsive to the viewport being resized.
         
-        let blinkDuration = 100;
+        //Setting a value for the Blinker duration
+        let blinkDuration = 300;
         
-        
+        //This is the output text that would be created and sent to the dom
         outputDisplay.innerHTML=
         `
             <h2 class='credits'>
             created by aFuzzyBear - 2020
             </h2>
         `
-        //Animation Frame
+        
+        /**
+         * @function startAnimationLoop
+         * The Animation loop for the Start Screen
+         */
         function startAnimationLoop(){
+            // Cancelling any previous StartScreen Animation Frame
             cancelAnimationFrame(view.startRaF)
+            // Clears the Display
             ctx.clearRect(0,0,model.width,model.height);
+            // Painting it black
             ctx.fillStyle = 'black'
             ctx.fillRect(0,0,model.width,model.height);
     
@@ -921,17 +956,16 @@ class GameView{
             model.asteroidField.forEach((asteroid)=>{
                 asteroid.draw()
             })
+            // Making the Image responsive to the width of the canvas: 500px 
             if(model.width < 500){
     
                 ctx.drawImage(titleImg,model.width/2 -titleImg.width/8,50,titleImg.width/4,titleImg.height/4)
             }else{
-    
+                
                 ctx.drawImage(titleImg,model.width/2 -titleImg.width/4,50,titleImg.width/2,titleImg.height/2)
             }
     
-            
-          
-    
+            // Making the Player Start Text blink
             if(blinkDuration % 30 != 0){
                 ctx.strokeStyle = 'gold'
                 ctx.lineWidth = 1
@@ -940,24 +974,32 @@ class GameView{
                 ctx.strokeText('ENTER TO START', model.width/2 -95 ,model.height - 100)
                 
             }
+
+            // Reset the blink timer on the Outer Block scope
             if(blinkDuration == 0){
-                blinkDuration = 100
+                blinkDuration = 300
             }
+
+            //Decrease the Blinker
             setInterval(()=>{
                 blinkDuration -- 
-               
             },model.FPS)
-           
+            
+            // Screen Specific Event Handler
             window.addEventListener('keydown',controller.startGame)
-    
+            //Assigning the value of the requestAnimationFrame to a variable
            view.startRaF= requestAnimationFrame(startAnimationLoop)
     
         }
-        // cancelAnimationFrame(view.startRaF)
+        // Cancelling  any previous Game and End Screen requestAnimationFrame
         cancelAnimationFrame(view.gameRaF)
         cancelAnimationFrame(view.endRaF)
+        
+        //Requesting StartAnimationLoop
         requestAnimationFrame(startAnimationLoop)
     }
+
+
     gameScreen(){
         this.game = true
         this.start = false
@@ -972,7 +1014,13 @@ class GameView{
              {x:0,y:0}
          );
      
-         model.createAsteroidField(5)
+          //Creating an asteroid Field
+        if(controller.isMobile) {
+            //Reducing the number of asteroids to prevent screen clutter on lower sizes
+            model.createAsteroidField(randomNumber(2,6))
+        }else{
+            model.createAsteroidField(randomNumber(5,13))
+        }
            
          outputDisplay.classList.add('hide')
          //Game Animation Loop
@@ -984,17 +1032,20 @@ class GameView{
         
     }
     gameAnimationLoop(){
-        
+        //Clearing the Previous Render
         ctx.clearRect(0,0,model.width,model.height)
-        ctx.fillStyle = 'black'
+        // Create a new Frame
         ctx.fillRect(0,0,model.width,model.height);
+        // Paint it Black - No colours any more
+        ctx.fillStyle = 'black'
 
-    
+        // If the spaceship exists 
        if(spaceship){ 
            if(!model.shipExploding) {
+            // Draw the 🚀
             spaceship.draw()  
-            
             }else{
+                //  Explode the ship💀
                 spaceship.explodeShip();
 
                 //Timeout's to carry out these functions after a certain period of time.        
@@ -1009,7 +1060,15 @@ class GameView{
             } 
         }
 
-        if(model.asteroidField.length === 0) model.createAsteroidField(randomNumber(3,7))
+        if(model.asteroidField.length === 0) {
+            if(controller.isMobile) {
+                //Reducing the number of asteroids to prevent screen clutter on lower sizes
+                model.createAsteroidField(randomNumber(2,6))
+            }else{
+                model.createAsteroidField(randomNumber(5,13))
+            }
+            // model.createAsteroidField(randomNumber(3,7))
+        }
         //Drawing each asteroid on the screen
         model.asteroidField.forEach((asteroid)=>{
             asteroid.draw()
@@ -1017,21 +1076,25 @@ class GameView{
 
         //Display the Lives Counter on the Screen
         livesDisplay.innerText = `LIVES\n ${model.gameLives}`
+        
+        //Display the Highest Score from the previous Game on the Screen
         currentHighScoreDisplay.innerText = `HIGH SCORE\n ${(model.currentScore > model.previousHighScore)?'NEW HIGH SCORE': model.previousHighScore}`
         //Display the Score on the Screen
         scoreDisplay.innerText = `SCORE\n ${model.currentScore}`
 
-
+        //Game Over 
         if(model.gameLives == 0){
             view.endScreen()
         }
+        //Remove Event Listeners from the previous Screen
         window.removeEventListener('keydown',controller.startGame)
-    
+        //Apply the keyboard event Listeners
         window.addEventListener('keydown',controller.keyDown)
         window.addEventListener('keyup',controller.keyUp)
-
+        // Assigning the requestAnimationFrame to a variable
         view.gameRaF = window.requestAnimationFrame(view.gameAnimationLoop)
     }
+
     endScreen(){
         this.end = true
         this.game = false
@@ -1157,8 +1220,11 @@ class GameView{
         function endAnimationLoop(){
             cancelAnimationFrame(view.startRaF)
             cancelAnimationFrame(view.gameRaF)
-            ctx.clearRect(0,0,model.width,model.width)
+            ctx.clearRect(0,0,model.width,model.height)
             ctx.fillRect(0,0,model.width,model.height)
+            // I wanna see it painted, painted black
+            // Black as night, black as coal
+            ctx.fillStyle = 'black'
             
             if(view.newHighScore){
                 explodeFirework()
@@ -1179,13 +1245,30 @@ class GameView{
 class GameController{
     constructor(){
      
-       
-        
 
+        
             window.addEventListener('mousedown',this.removeDefault)
             window.addEventListener('keydown',this.removeDefault)
             
      
+    }
+    get isMobile(){
+        // credit to Timothy Huang for this regex test: 
+        // https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+            return true
+       }
+       else{
+            return false
+       }
+    } 
+    checkMobile(){
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+            return this.isMobile = true
+        }
+        else{
+            return this.isMobile = false
+        }
     }
     removeDefault(event){
         // Prevent default behaviour from causing DOM default actions to override the game
@@ -1275,7 +1358,7 @@ class GameController{
     
         return view.startScreen()
     }
-   
+  
     
 }
 //Global Scope

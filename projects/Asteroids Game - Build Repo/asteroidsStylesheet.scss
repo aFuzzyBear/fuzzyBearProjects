@@ -29,6 +29,7 @@ body{
     font-display: swap;
 }
 
+// Setting Up the Gird 
 
 .container-parent{
    display: grid; 
@@ -39,7 +40,7 @@ body{
    height:100%;
 }
   
-
+// Grid container for the Arcade
 .container-arcade {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -270,5 +271,27 @@ body{
         width: 3rem;
         height: 4rem;
         transform: rotate(70deg);
+    }
+}
+@media screen and (max-width:800px){
+    html{
+        font-size: calc(0.5em + 0.25vmin);
+    }
+    .container-parent,{
+        display: block;
+    }
+    .panel-top,.panel-right,.panel-left,.panel-bottom,.panel-console{
+        display: none;
+    }
+    .container-game{
+        position: absolute;
+        top:0;
+    }
+    .panel-console{
+        width: 100%;
+        height: 100vh;
+    }
+    .js-output.newHighScore{
+        width: 45%;
     }
 }
