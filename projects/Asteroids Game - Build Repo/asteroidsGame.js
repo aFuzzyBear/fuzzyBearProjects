@@ -134,7 +134,7 @@ class GameModel{
         this.shipExploding = false
         
         /**@this this.lives -**PRIVATE** Number of game lives*/
-        this._lives = Number(5)
+        this._lives = Number(1)
 
         /**@this this._playerName - **PRIVATE** stores the players name */
         this._playerName = String()
@@ -1358,7 +1358,19 @@ class GameController{
     
         return view.startScreen()
     }
-  
+   //Going to create a mobile controller
+   testPointerObject(event){
+       let type;
+       console.log(event)
+       if(event.type == 'touchstart')console.log('Touch Start'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
+       if(event.type == 'touchmove')console.log('Touch Move:'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
+       if(event.type == 'touchend')console.log('Touch End:'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
+       if(event.type == 'touchcancel')console.log('Touch cancel:'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
+
+       
+
+
+   }
     
 }
 //Global Scope
@@ -1371,3 +1383,7 @@ let controller = new GameController()
 
 
 window.addEventListener('load',controller.onLoad())
+document.addEventListener('touchstart',controller.testPointerObject)
+document.addEventListener('touchmove',controller.testPointerObject)
+document.addEventListener('touchend',controller.testPointerObject)
+document.addEventListener('touchcancel',controller.testPointerObject)
