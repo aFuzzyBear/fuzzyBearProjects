@@ -134,7 +134,7 @@ class GameModel{
         this.shipExploding = false
         
         /**@this this.lives -**PRIVATE** Number of game lives*/
-        this._lives = Number(1)
+        this._lives = Number(5)
 
         /**@this this._playerName - **PRIVATE** stores the players name */
         this._playerName = String()
