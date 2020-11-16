@@ -999,12 +999,18 @@ class GameView{
         requestAnimationFrame(startAnimationLoop)
     }
 
-
+    /**
+     * @method gameScreen
+     * @description Contains the contextual information for visual rendering of the game screen
+     */
     gameScreen(){
+        // Switching the flags of the sceens-Debugging Purpose only
         this.game = true
         this.start = false
+
         //Games Global Scope
-         spaceship = new ShipObject(
+        // Create a New Ship object on the global scope
+        spaceship = new ShipObject(
              model.width /2,
              model.height/2,
              30,
@@ -1014,23 +1020,28 @@ class GameView{
              {x:0,y:0}
          );
      
-          //Creating an asteroid Field
+        //Creating an asteroid Field
         if(controller.isMobile) {
             //Reducing the number of asteroids to prevent screen clutter on lower sizes
             model.createAsteroidField(randomNumber(2,6))
         }else{
             model.createAsteroidField(randomNumber(5,13))
         }
-           
+        //  Hiding the JS-output Overlay  
          outputDisplay.classList.add('hide')
-         //Game Animation Loop
          
+         //Cancelling all previous versions of Request Animation Frames that might still persist on the window
          cancelAnimationFrame(view.startRaF)
          cancelAnimationFrame(view.gameRaF)
          cancelAnimationFrame(view.endRaF)
+        // Reuesting Animation Loop for the Game Screen
          requestAnimationFrame(view.gameAnimationLoop)
         
     }
+    /**
+     * @method gameAnimationLoop
+     * @description Demonstrating another way of calling a request Animation Loop outwith the internal closure of a function. Plus this way I can ensure that the game would run independent of anything else, (there was a bug that caused this outcome)
+     */
     gameAnimationLoop(){
         //Clearing the Previous Render
         ctx.clearRect(0,0,model.width,model.height)
@@ -1067,7 +1078,6 @@ class GameView{
             }else{
                 model.createAsteroidField(randomNumber(5,13))
             }
-            // model.createAsteroidField(randomNumber(3,7))
         }
         //Drawing each asteroid on the screen
         model.asteroidField.forEach((asteroid)=>{
@@ -1079,6 +1089,7 @@ class GameView{
         
         //Display the Highest Score from the previous Game on the Screen
         currentHighScoreDisplay.innerText = `HIGH SCORE\n ${(model.currentScore > model.previousHighScore)?'NEW HIGH SCORE': model.previousHighScore}`
+
         //Display the Score on the Screen
         scoreDisplay.innerText = `SCORE\n ${model.currentScore}`
 
@@ -1086,29 +1097,45 @@ class GameView{
         if(model.gameLives == 0){
             view.endScreen()
         }
+
         //Remove Event Listeners from the previous Screen
         window.removeEventListener('keydown',controller.startGame)
+
         //Apply the keyboard event Listeners
         window.addEventListener('keydown',controller.keyDown)
         window.addEventListener('keyup',controller.keyUp)
+
         // Assigning the requestAnimationFrame to a variable
         view.gameRaF = window.requestAnimationFrame(view.gameAnimationLoop)
     }
-
+    /**
+     * @method endScreen
+     * @description contains the contextual information for the rendering the contents on the End Screen
+     */
     endScreen(){
+        // Switching the screen flags - Debugging Purpose Only
         this.end = true
         this.game = false
+        
+        
         // Making FireWorks
-    
+        /**I wanted to display fireworks at the end when the User earns a new HighScore. I found the following algorithm and applied it to fit the game.
+         * @tutorial https://slicker.me/javascript/fireworks.htm
+         */
+        /**@constant max_fireworks - Max number of Fireworks to be generated */
         const max_fireworks = 10
+        /**@constant max_sparks - Max number of sparks that is made from each firework */
         const max_sparks =25;
-    
+        /**@let - fireworksArray - Array storing the Firework Objects as they are made */
         let fireworksArray = []
+        // For-loop to generate the individual firework objects
         for(let firework = 0; firework < max_fireworks; firework++){
+            // Each firework has an array of where each sparkler effect is stored in
             let firework = {
                 sparks:[]
             }
             for(let index = 0; index < max_sparks; index++){
+                // Generating the sparkler
                 let sparkler = {
                     vX: randomNumber(15,30)/model.FPS * (randomNumberDecimal() <0.5 ? 1 : -1),
                     vY: randomNumber(15,30)/model.FPS * (randomNumberDecimal() <0.5 ? 1 : -1),
@@ -1119,43 +1146,58 @@ class GameView{
                 
             }
             fireworksArray.push(firework)
+            // providing some extra de-facto information to the firework
             resetFirework(firework)
         }
+        /**
+         * @function resetFirework
+         * @param {Object} firework 
+         * Provides reset and default values for the fireworks
+         */
         function resetFirework(firework){
+            // Random Position on the X-axis
             firework.x = randomNumberDecimal()* model.width
+            // Bottom of the screen
             firework.y = model.height;
+            // Keeps track of the time the firework exists for
             firework.age = 0;
+            // Applies the Flying 'phase' of the firework
             firework.status = 'fly'
         }
     
         function explodeFirework(){
+            // Clear the screen after each explosion
             ctx.clearRect(0,0, model.width,model.height);
+            // Looping through the firework Array
             fireworksArray.forEach((firework,index)=>{
+                // Checks the status of the firework
                 if(firework.status == 'explode'){
-                    
+                    // While the firework is exploding Draw the sparklers
                     firework.sparks.forEach(spark =>{
                         for(let index = 0; index < 4; index++){
+                            // Defining some properties
                             let trailAge = firework.age * index 
                             let x = firework.x + spark.vX * trailAge * randomNumberDecimal()**2
                             let y = firework.y + spark.vY * trailAge * randomNumberDecimal()**2
                             let fade = randomNumberDecimal()
                             let color = `rgb(${randomNumber(0,255)*fade},${randomNumber(0,255)*fade},${randomNumber(0,255)*fade},1)`
-    
+                            // Draw the sparklers
                             ctx.beginPath();
                             ctx.fillStyle = color;
                             ctx.arc(x,y,spark.weight,0,2*Math.PI)
-                            // ctx.rect(x,y,spark.weight,spark.weight)
                             ctx.fill()
                         }
                     });
-    
+                    // Increase the Age of the firework
                     firework.age++
+                    // Make the firework reset if it gets to old or just by pure randomness
                     if(firework.age > model.FPS*1.5 && randomNumberDecimal() < 0.5){
                         resetFirework(firework)
                     }
                 }
                 else{
                     firework.y = firework.y - 10
+                    // This draws the firework tail on the canvas
                     for(let spark = 0; spark < 10; spark++){
                         ctx.beginPath()
                         ctx.fillStyle= `rgba(${index * 50}, ${spark * 17}, 0,${randomNumberDecimal()})`
@@ -1163,40 +1205,54 @@ class GameView{
                         ctx.fill()
                     }
                 }
+                // Sets the conditions when the firework would explode
                 if(randomNumberDecimal() < 0.01 || firework.y < randomNumber(25,150)) firework.status = 'explode'
                 
             })
         }
         // End of Fireworks
 
+        // Check the Score - If the current Game is higher than the previous game then it would return and change the view.newHighScore to true
         model.checkScore()
         
+        // Bring back the JS-Output overlay
         outputDisplay.classList.remove('credits')
         outputDisplay.classList.remove('hide')
         
+        // Create a DOM element to display the List of Previous High Scores
         let highScoresOutput = document.createElement('div')
+        // Apply a CSS class to the element
         highScoresOutput.classList.add('highScoresDisplay')
+        // Append to the DOM
         highScoresOutput.append(highScoresTable)
         
+        // Create a DOM Element to display the winner's Screen text
         let winnersText = document.createElement('div')
+        // Apply a CSS class to the element
         winnersText.classList.add('newHighScore')
-        winnersText.innerHTML=`
-            <div class="title-wrapper">
-                <h2>
-                    Congratulations on Setting a New High Score
-                </h2>
-            </div>
-            <div class="form-wrapper">
-                <input type="text" name="playerName" id="input-playerName" placeholder="Enter Name" onchange="model.playerName()">
-                <button type="submit" onclick="model.addScore()">Submit</button>
-            </div>`
-        
+        // Defining the inner HTML that would be rendered on the DOM
+        winnersText.innerHTML=
+            `
+                <div class="title-wrapper">
+                    <h2>
+                        Congratulations on Setting a New High Score
+                    </h2>
+                </div>
+                <div class="form-wrapper">
+                    <input type="text" name="playerName" id="input-playerName" placeholder="Enter Name" onchange="model.playerName()">
+                    <button type="submit" onclick="model.addScore()">Submit</button>
+                </div>
+            `
+        // Creating a DOM Button Element as a  Reset Button
         let btnRestart = document.createElement('button');
+        // Apply a CSS Class to the Element
         btnRestart.classList.add('btn-restart')
+        // Placing the Text inside the button
         btnRestart.innerText = 'Restart Game'
 
-
+        // If there is a new High Score 
         if(this.newHighScore){
+            // Winners Screen
             outputDisplay.appendChild(highScoresOutput)
             outputDisplay.append(winnersText)
             outputDisplay.append(btnRestart)            
@@ -1208,9 +1264,12 @@ class GameView{
 
         }
 
+        // Populate the HighScores List
         model.populateHighScoresList((model.highScoresFromStorage) ? [...model.highScoresFromStorage]:[],highScoresTable)
+        // Remove the PreventDefault from Bubbling through the DOM
         window.removeEventListener('mousedown',controller.removeDefault)
         window.removeEventListener('keydown',controller.removeDefault)
+        // Apply an event listener to the button
         btnRestart.addEventListener('click',()=>{
             //Reload the window to reset the game 
             controller.restart()
@@ -1218,40 +1277,55 @@ class GameView{
 
         
         function endAnimationLoop(){
+            // Another Demonstration of CancelAnimation Frame this time within a requestAnimation recursive Loop
             cancelAnimationFrame(view.startRaF)
             cancelAnimationFrame(view.gameRaF)
+
+            // Clear the Previous Screen
             ctx.clearRect(0,0,model.width,model.height)
+            // Draw a new Screen
             ctx.fillRect(0,0,model.width,model.height)
             // I wanna see it painted, painted black
             // Black as night, black as coal
             ctx.fillStyle = 'black'
             
+            // Determine which output to display
             if(view.newHighScore){
+                //Winners Screen has Fireworks exploding
                 explodeFirework()
             }else{
-
+                // Game-Over Screen 
                 //Drawing each asteroid on the screen
                 model.asteroidField.forEach((asteroid)=>{
                 asteroid.draw()
                 })
             }
+            // Assigning requestAnimationFrame value to a variable
             view.endRaF = requestAnimationFrame(endAnimationLoop)
         }
+        // Request the AnimationLoop
         requestAnimationFrame(endAnimationLoop)
     }
     
 }   
 
+/**
+ * @class GameController
+ * @classdesc Defines the Event Handlers and controls the interactions between the User, the game model and its objects with the game view. 
+ */
 class GameController{
     constructor(){
-     
-
         
+        // Applies the preventDefault() behaviours of the key's and mouse from interfering with the rendering of the game
+
             window.addEventListener('mousedown',this.removeDefault)
             window.addEventListener('keydown',this.removeDefault)
             
      
     }
+    /**
+     * @this this.isMobile - Tests if the platform is a Mobile device or not
+     */
     get isMobile(){
         // credit to Timothy Huang for this regex test: 
         // https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3
@@ -1262,22 +1336,25 @@ class GameController{
             return false
        }
     } 
-    checkMobile(){
-        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-            return this.isMobile = true
-        }
-        else{
-            return this.isMobile = false
-        }
-    }
+    /**
+     * @method removeDefault
+     * @param {EventTarget} event 
+     * Removes the event default behavious from interfering with the DOM
+     */
     removeDefault(event){
         // Prevent default behaviour from causing DOM default actions to override the game
         event.preventDefault()
     }
+    /**
+     * @method keyDown
+     * @param {KeyboardEvent} event 
+     * Applies the relevant Handler application when the keys are pressed 
+     */
     keyDown(event){
-        
+        // Applying EventHandlers when keys are pressed
         switch(event.code){
             case "ArrowUp":
+                // Remove the default behaviour of the event to move the page about
                 event.preventDefault()
                 spaceship.thrusting = true
                 break
@@ -1310,6 +1387,11 @@ class GameController{
 
     }
    
+    /**
+     * @method
+     * @param {KeyboardEvent} event 
+     * Removes the relevant Handler application when the keys are released 
+     */
     keyUp(event){
         switch(event.code){
             case "ArrowUp":
@@ -1329,6 +1411,11 @@ class GameController{
                 break
         }    
     }
+    /**
+     * @method startGame
+     * @param {KeyboardEvent} event 
+     * Instructs to start the game when the key is pressed
+     */
     startGame(event){
         switch(event.code){
             case 'Enter':
@@ -1336,7 +1423,10 @@ class GameController{
                 break
         }
     }
-
+    /**
+     * @method restart
+     * Clears the previous game model and data then returns a new instance of the game
+     */
     restart(){
         // Clearing the previous game data
         model = null
@@ -1348,42 +1438,25 @@ class GameController{
         
         model = new GameModel()
         
-        
+        //Display the start screen
         view.startScreen()
     }
+    // When the document loads we wish to start the game
     onLoad(){
-        
+        // Instantiating a new Game Model
         model = new GameModel()
         
-    
+        // Display the Start Screen
         return view.startScreen()
     }
-   //Going to create a mobile controller
-   testPointerObject(event){
-       let type;
-       console.log(event)
-       if(event.type == 'touchstart')console.log('Touch Start'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
-       if(event.type == 'touchmove')console.log('Touch Move:'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
-       if(event.type == 'touchend')console.log('Touch End:'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
-       if(event.type == 'touchcancel')console.log('Touch cancel:'+event.targetTouches[0].clientX,event.targetTouches[0].clientY)
-
-       
-
-
-   }
+   
     
 }
 //Global Scope
 let spaceship,model
-
+// Instantiating the Game View
 let view = new GameView()
-
-
+// Instantiating the Game Controller
 let controller = new GameController()
-
-
+// Making the Game Load when the DOM contents have finished Loading
 window.addEventListener('load',controller.onLoad())
-document.addEventListener('touchstart',controller.testPointerObject)
-document.addEventListener('touchmove',controller.testPointerObject)
-document.addEventListener('touchend',controller.testPointerObject)
-document.addEventListener('touchcancel',controller.testPointerObject)
