@@ -684,7 +684,7 @@ class ShipObject extends BasicObject{
         }
         
         //Draw each laser
-        this.laserArray.forEach(laser => {
+        this.laserArray.forEach((laser,index) => {
 
             ctx.fillStyle = "red"
             ctx.beginPath();
