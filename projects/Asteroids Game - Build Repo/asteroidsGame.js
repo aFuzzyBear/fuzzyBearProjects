@@ -700,14 +700,22 @@ class ShipObject extends BasicObject{
             //Slightly different to the model.screenEdges function
             
             if(laser.x < 0){
-                laser.x = model.width
+                // laser.x = model.width
+                //Removing the Laser as suggested by bb8
+                this.laserArray.splice(index,1)
             }else if(laser.x > model.width){
-                laser.x = 0
+                // laser.x = 0
+                //Removing the Laser as suggested by bb8
+                this.laserArray.splice(index,1)
             }
             if(laser.y < 0){
-                laser.y = model.height
+                // laser.y = model.height
+                //Removing the Laser as suggested by bb8
+                this.laserArray.splice(index,1)
             }else if(laser.y > model.height){
-                laser.y = 0
+                // laser.y = 0
+                //Removing the Laser as suggested by bb8
+                this.laserArray.splice(index,1)
             }
            
         })
