@@ -88,7 +88,7 @@ function convertRadians(degrees){
  * 
  */
 function distanceBetweenPoints(x1, y1, x2, y2) {
-    return Math.sqrt((x2 - x1)** 2 + (y2 - y1)**2)
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 }
 
 /**
@@ -103,7 +103,7 @@ function distanceBetweenPoints(x1, y1, x2, y2) {
  * Returns the distance between the center of two circles 
  */   
 function distanceBetweenCircles(x1,y1,r1,x2,y2,r2){
-    return Math.ceil(Math.sqrt((x2 - x1)**2 + (y2-y1)**2) - (r2+r1))
+    return Math.ceil(Math.sqrt((x2 - x1) ** 2 + (y2-y1) ** 2) - (r2+r1))
 }
 
 
