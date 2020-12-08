@@ -175,9 +175,9 @@ body{
     &.hide{
         display: none;
     }
-    .title-wrapper{
-        margin:1rem 0;
-    }
+
+
+
     .highScoresDisplay {
         margin: 10rem 0 0 4rem;
         width: auto;
@@ -193,24 +193,31 @@ body{
     .newHighScore{
         margin: auto;
         padding: 1rem;
-    
-        >.form-wrapper input#input-playerName{
-            width: 60%;
-            height: 4rem;
-            border: none;
-            border-bottom: 4px solid gold;
-            background-color: rgba(62,62,62,0.4);
-    
-            text-align: center;
-            color: gold;
-            letter-spacing: 0.3em;
-            font-size: 2rem;
+
+    }
+    .title-wrapper{
+        margin:1rem 0;
+    }
+    >.form-input{
+        width: 60%;
+        height: 4rem;
+        border: none;
+        border-bottom: 4px solid gold;
+        background-color: rgba(62,62,62,0.4);
+
+        text-align: center;
+        color: gold;
+        letter-spacing: 0.3em;
+        font-size: 2rem;
+        cursor: text;
+        :focus{
+            
+            cursor: text;
         }
-        
-        >.form-wrapper button{
-            width: auto;
-        }
-        
+    }
+    
+    >.form-wrapper .btnAddScore{
+        width: auto;
     }
     button{
         height: 3rem;

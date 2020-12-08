@@ -216,10 +216,6 @@ body {
   display: none;
 }
 
-.js-output .title-wrapper {
-  margin: 1rem 0;
-}
-
 .js-output .highScoresDisplay {
   margin: 10rem 0 0 4rem;
   width: auto;
@@ -237,7 +233,11 @@ body {
   padding: 1rem;
 }
 
-.js-output .newHighScore > .form-wrapper input#input-playerName {
+.js-output .title-wrapper {
+  margin: 1rem 0;
+}
+
+.js-output > .form-input {
   width: 60%;
   height: 4rem;
   border: none;
@@ -247,9 +247,14 @@ body {
   color: gold;
   letter-spacing: 0.3em;
   font-size: 2rem;
+  cursor: text;
 }
 
-.js-output .newHighScore > .form-wrapper button {
+.js-output > .form-input :focus {
+  cursor: text;
+}
+
+.js-output > .form-wrapper .btnAddScore {
   width: auto;
 }
 
