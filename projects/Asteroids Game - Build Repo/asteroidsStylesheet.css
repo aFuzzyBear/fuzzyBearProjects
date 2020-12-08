@@ -265,7 +265,64 @@ body {
 
 .js-output .btn-restart {
   width: 30%;
+  height: 6rem;
   margin: auto;
+}
+
+.js-output .container-rotateButtons {
+  position: relative;
+  bottom: -33%;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.js-output .container-rotateButtons .btn-rotateLeft, .js-output .container-rotateButtons .btn-rotateRight {
+  width: 25%;
+  height: auto;
+  color: gold;
+  background-color: rgba(108, 105, 88, 0.31);
+  font-size: xx-large;
+  font-weight: 800;
+  -webkit-box-shadow: 1px 3px #9D9D9D8A, 4px 5px #131313;
+          box-shadow: 1px 3px #9D9D9D8A, 4px 5px #131313;
+}
+
+.js-output .container-rotateButtons .btn-rotateLeft::before {
+  content: '\21B6';
+}
+
+.js-output .container-rotateButtons .btn-rotateRight::before {
+  content: '\21B7';
+}
+
+.js-output .container-rotateButtons .btn-column {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 60vw;
+}
+
+.js-output .container-rotateButtons .btn-thrust, .js-output .container-rotateButtons .btn-laser {
+  height: 6rem;
+  margin: 1rem;
+  -webkit-box-shadow: 1px 3px #9D9D9D8A, 4px 5px #131313;
+          box-shadow: 1px 3px #9D9D9D8A, 4px 5px #131313;
+  background: #ffd700a3;
+}
+
+.js-output .container-rotateButtons .btn-thrust::before {
+  content: "Thrust";
+}
+
+.js-output .container-rotateButtons .btn-laser::before {
+  content: "Fire";
 }
 
 .break-row {
@@ -305,8 +362,8 @@ body {
   display: flex;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
-  -ms-flex-line-pack: end;
-      align-content: flex-end;
+  -ms-flex-line-pack: start;
+      align-content: flex-start;
 }
 
 .container-iconography .icon-wrapper {

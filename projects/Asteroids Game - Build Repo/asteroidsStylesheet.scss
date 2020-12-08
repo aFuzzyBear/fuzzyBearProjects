@@ -157,7 +157,7 @@ body{
     color: gold;
     font-family: 'hyperspace';
    
-    // Setting up Flexbox
+    // Setting up Flex box
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -223,7 +223,70 @@ body{
     }
     .btn-restart{
         width: 30%;
+        height: 6rem;
         margin: auto;
+    }
+    .container-rotateButtons{
+        position: relative;
+        bottom: -33%;
+        align-content: center;
+        display: flex;
+        // flex-wrap: wrap;
+        // width: 50%;
+
+        .btn-rotateLeft,.btn-rotateRight{
+            // margin-right: 20px;
+            width:25%;
+            height:auto;
+            color: gold;
+            background-color:rgba(108, 105, 88, 0.31);
+            font-size: xx-large;
+            font-weight: 800;
+            box-shadow: 1px 3px #9D9D9D8A, 4px 5px #131313
+        }
+        .btn-rotateLeft{
+            // border-radius: 50% 0 0 50%;
+            // transform: skewX(-11deg);
+            // margin-right: 2rem;
+        }
+        .btn-rotateRight{
+            // border-radius: 0 50% 50% 0;
+            // transform: skewX(11deg);
+            // margin-left: 2rem;
+        }
+        .btn-rotateLeft::before{
+            content: '\21B6' ;
+
+        }
+        .btn-rotateRight::before{
+            content: '\21B7' ;
+        }
+        .btn-column{
+            display: flex;
+            flex-direction: column;
+            width: 60vw;
+        }
+        .btn-thrust,.btn-laser{
+            height: 6rem;
+            margin: 1rem;
+            box-shadow: 1px 3px #9D9D9D8A, 4px 5px #131313;
+            background: #ffd700a3;
+        }
+        .btn-thrust{
+            // clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+
+        }
+        .btn-thrust::before{
+            content:"Thrust"
+        }
+        .btn-laser{
+            // clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+
+        }
+        .btn-laser::before{
+            content: "Fire";
+        }
+        
     }
 }
 
@@ -252,7 +315,7 @@ body{
     width: 42.5%;
     display: flex;
     flex-wrap: wrap;
-    align-content: flex-end;
+    align-content: flex-start;
 
     
     .icon-wrapper{
@@ -273,11 +336,12 @@ body{
         transform: rotate(70deg);
     }
 }
+
 @media screen and (max-width:800px){
     html{
         font-size: calc(0.5em + 0.25vmin);
     }
-    .container-parent,{
+    .container-parent {
         display: block;
     }
     .panel-top,.panel-right,.panel-left,.panel-bottom,.panel-console{

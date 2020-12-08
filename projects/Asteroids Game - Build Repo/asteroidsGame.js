@@ -4,46 +4,56 @@
 
 
 /**
+ * @constant canvas
  * @type {HTMLCanvasElement}
+ * @description Canvas Object from the DOM
  */
 const canvas = document.getElementById('gameCanvas');
 
 /**
+ * @constant ctx
  * @type {CanvasRenderingContext2D} 
+ * @description Canvas Rendering Engine
  */
 const ctx = canvas.getContext('2d');
 
 /**
- * @constant gameContainer - Game Container Element
+ * @constant gameContainer  
  * @type {HTMLBodyElement}
+ * @description Game Container DOM Element 
  */
 const gameContainer = document.querySelector('.gameLayer');
 /**
- * @constant outputDisplay - JS Output Container Element
+ * @constant outputDisplay 
  * @type {HTMLBodyElement}
+ * @description JS Output Container DOM Element
  */
 const outputDisplay = document.querySelector('.js-output')
 /**
- * @constant highScoresTable - Creating a Order List Element on the Dom to Store the High Scores
+ * @constant highScoresTable 
  * @type {HTMLBodyElement}
+ * @description  Creating a Order List Element on the Dom to Store the High Scores
  */
 const highScoresTable = document.createElement('ol')
-
-highScoresTable.classList.add('highScoresTable') // Applying a class to the Element
+// Applying a class to the Element
+highScoresTable.classList.add('highScoresTable') 
 
 /**
- * @constant scoreDisplay - Displays the Score on the DOM
+ * @constant scoreDisplay  
  * @type {HTMLBodyElement}
+ * @description Displays the Score on the DOM
  */
 const scoreDisplay = document.getElementById('score');
 /**
- * @constant scoreDisplay - Displays the Score on the DOM
+ * @constant currentHighScoreDisplay
  * @type {HTMLBodyElement}
+ * @description Displays the Current High Score on the DOM
  */
 const currentHighScoreDisplay = document.getElementById('highScore');
 /**
- * @constant livesDisplay - Displays the Score on the DOM
+ * @constant livesDisplay 
  * @type {HTMLBodyElement}
+ * @description Displays the Lives Counter on the DOM
  */
 const livesDisplay = document.getElementById('lives');
 
@@ -88,22 +98,22 @@ function convertRadians(degrees){
  * 
  */
 function distanceBetweenPoints(x1, y1, x2, y2) {
-    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    return Math.sqrt((x2 - x1)** 2 + (y2 - y1)**2)
 }
 
 /**
  * @function distanceBetweenCircles
  * @param {Number} x1 - X - Co-ordinate of the Primary Object
  * @param {Number} y1 - Y - Co-ordinate of the Primary Object
- * @param {Number} r2 - R - Co-ordinate of the radius of the Primary Object 
+ * @param {Number} r2 - R - Size of the radius of the Primary Object 
  * @param {Number} x2 - X - Co-ordinate of the Secondary Object
  * @param {Number} y2 - Y - Co-ordinate of the Secondary Object
- * @param {Number} r2 - R - Co-ordinate of the radius of the second Object 
+ * @param {Number} r2 - R - Size of the radius of the second Object 
  * @returns 
  * Returns the distance between the center of two circles 
  */   
 function distanceBetweenCircles(x1,y1,r1,x2,y2,r2){
-    return Math.ceil(Math.sqrt((x2 - x1) ** 2 + (y2-y1) ** 2) - (r2+r1))
+    return Math.ceil(Math.sqrt((x2 - x1)**2 + (y2-y1)**2) - (r2+r1))
 }
 
 
@@ -118,9 +128,7 @@ class GameModel{
       
         /**@this this.AsteroidArray - Array which would contain the asteroids in the asteroid field */
         this.asteroidField = []
-       
-        
-        
+
         /**@this this.currentScore - Keeps track of the score */
         this.currentScore = Number(0)
         
@@ -201,16 +209,15 @@ class GameModel{
     
     /**
      * @method addScore
-     * @description Creates a record of the new high score and captures the players name as well. It then stores it to the LocalStorage and repopulates the High Score Table
+     * @description Creates a record of the new high score and captures the players name as well. It then sorts and stores it to the LocalStorage, repopulating the High Score Table with the new values
      */
     addScore(){
-        let name = this._playerName
-        let score = this.currentScore
+
         let storageArray = (this.highScoresFromStorage) ? [...this.highScoresFromStorage]:[]
         
         let record = {
-            name: name,
-            score: score
+            name: this._playerName,
+            score: this.currentScore
         }
         storageArray.push(record)
         storageArray.sort(function(a,b){
@@ -361,8 +368,8 @@ class GameModel{
         let r = this.asteroidField[index].r;
     
         //split the larger asteroid into two when shot at
-       if( r >50 && r <= 100 ){
-           //Adding the size of the asteroid as the value to be added to the score
+       if( r > 50 && r <= 100 ){
+           //For Large Asteroids we would be adding 20 pts to the score
            this.currentScore += 20
            //Remove the asteroid that is shot at
            this.asteroidField.splice(index,1)
@@ -370,8 +377,8 @@ class GameModel{
            this.asteroidField.push(this.createNewAsteroid(x,y,r/2,index + 1))
            this.asteroidField.push(this.createNewAsteroid(x,y,r/2,index + 2))
         }
-        if( r >25  && r <50){
-            //Adding the size as the asteroid as the value to be added to the score
+        if( r > 25  && r < 50){
+            // Medium Sized Asteroids we would add 50 pts to the score
             this.currentScore += 50
             //Remove the asteroid that is shot at
             this.asteroidField.splice(index,1)
@@ -381,7 +388,7 @@ class GameModel{
             
        }
        if( r <= 25){
-           //Adding the size as the asteroid as the value to be added to the score
+            // The Smallest Asteroids  carry a score of 100 pts
            this.currentScore += 100
            //Remove the smallest asteroid 
            this.asteroidField.splice(index,1)
@@ -536,7 +543,7 @@ class ShipObject extends BasicObject{
         }else{
             //Giving it some Normal Colors
             ctx.strokeStyle = "white";
-            ctx.fillStyle = "red"
+            ctx.fillStyle = "white"
         }
        //The outer Triangle
        ctx.beginPath();
@@ -554,25 +561,25 @@ class ShipObject extends BasicObject{
             this.x - this.r * (2 / 3 * Math.cos(this.a) - Math.sin(this.a)),
             this.y + this.r * (2 / 3 * Math.sin(this.a) + Math.cos(this.a))
         );
-    
+        // ctx.fill()
         ctx.closePath();//Finishes of the Outer Triangle
         ctx.stroke();
 
         //Drawing the Cockpit -inner triangle
         ctx.beginPath();
-        // ctx.fillStyle = 'red';-delete this line
         ctx.lineWidth = 2;
+        
         ctx.moveTo( // top of the cockpit
             this.x - (1 / 5 * this.r - this.SHIP_SIZE) * Math.cos(this.a),
             this.y + (1 / 5 * this.r - this.SHIP_SIZE) * Math.sin(this.a)
         );
         ctx.lineTo( // rear left of the cockpit
-            this.x - this.r * (1 / 3 * Math.cos(this.a) +  0.5 * Math.sin(this.a)),
-            this.y + this.r * (1 / 3 * Math.sin(this.a) - 0.5 * Math.cos(this.a))
+            this.x - this.r * (2 / 3 * Math.cos(this.a) +  0.75 * Math.sin(this.a)),
+            this.y + this.r * (2 / 3 * Math.sin(this.a) - 0.75 * Math.cos(this.a))
         );
         ctx.lineTo( // rear right of the cockpit
-            this.x - this.r * (1 / 3 * Math.cos(this.a) -  0.5 * Math.sin(this.a)),
-            this.y + this.r * (1 / 3 * Math.sin(this.a) + 0.5 * Math.cos(this.a))
+            this.x - this.r * (2 / 3 * Math.cos(this.a) -  0.75 * Math.sin(this.a)),
+            this.y + this.r * (2 / 3 * Math.sin(this.a) + 0.75 * Math.cos(this.a))
         );
         ctx.fill();//Fill in the Shape
         ctx.closePath();//Finishes of the Triangle
@@ -588,8 +595,8 @@ class ShipObject extends BasicObject{
             ctx.fillStyle = "red"
             ctx.lineWidth = 2;
             ctx.moveTo( // rear center behind the spaceship
-                this.x - 4 / 3 * this.r * Math.cos(this.a),
-                this.y + 4 / 3 * this.r * Math.sin(this.a)
+                this.x - 5/3 * this.r * Math.cos(this.a),
+                this.y + 5/3 * this.r * Math.sin(this.a)
             );
             ctx.lineTo( // rear left
                 this.x - this.r * (2 / 3 * Math.cos(this.a) +  0.75 * Math.sin(this.a)),
@@ -669,6 +676,7 @@ class ShipObject extends BasicObject{
      * @description contains the instructions to draw the laser on the canvas
      */
     drawLasers(){
+
         //Applying the lasers
         //Looping backwards through the laser array
         for(let laserIndex = this.laserArray.length-1 ; laserIndex >= 0; laserIndex-- ){
@@ -676,11 +684,13 @@ class ShipObject extends BasicObject{
             this.laserArray[laserIndex].distanceTravelled += 
                 Math.sqrt(this.laserArray[laserIndex].vX**2 + this.laserArray[laserIndex].vY**2);
 
-            if(this.laserArray[laserIndex].distanceTravelled > 
-                    this.laserDistance * model.width)
-                    {
+            if(!controller.isMobile && this.laserArray[laserIndex].distanceTravelled > 
+                    this.laserDistance * model.width){
                         this.laserArray.splice(laserIndex,1)
-                     }
+                    }
+            if(controller.isMobile && this.laserArray[laserIndex].distanceTravelled > this.laserDistance * model.height){
+                this.laserArray.splice(laserIndex,1)
+            }
         }
         
         //Draw each laser
@@ -895,10 +905,6 @@ class GameView{
        this.gameRaF    
        /**@this this.endRaF - Registers the RequestAnimationFrame number  for the end screen*/ 
        this.endRaF
-
-
-       
-       
     
     }
     //Methods
@@ -911,9 +917,10 @@ class GameView{
         this.start = true
         
         //Block scope
+
         //Creating an asteroid Field
         if(controller.isMobile) {
-            //Reducing the number of asteroids to prevent screen clutter on lower sizes
+            //Reducing the number of asteroids to prevent screen clutter on lower sizes and mobile devices
             model.createAsteroidField(randomNumber(2,6))
         }else{
             model.createAsteroidField(randomNumber(5,13))
@@ -937,7 +944,7 @@ class GameView{
         document.addEventListener('resize',getImgSize) // This is to keep Image responsive to the viewport being resized.
         
         //Setting a value for the Blinker duration
-        let blinkDuration = 300;
+        let blinkDuration = 360;
         
         //This is the output text that would be created and sent to the dom
         outputDisplay.innerHTML=
@@ -964,13 +971,13 @@ class GameView{
             model.asteroidField.forEach((asteroid)=>{
                 asteroid.draw()
             })
-            // Making the Image responsive to the width of the canvas: 500px 
+            // Making the Title Image responsive to the width of the canvas: 500px 
             if(model.width < 500){
     
-                ctx.drawImage(titleImg,model.width/2 -titleImg.width/8,50,titleImg.width/4,titleImg.height/4)
+                ctx.drawImage(titleImg, model.width/2 - titleImg.width/6,50,titleImg.width/3,titleImg.height/3)
             }else{
                 
-                ctx.drawImage(titleImg,model.width/2 -titleImg.width/4,50,titleImg.width/2,titleImg.height/2)
+                ctx.drawImage(titleImg, model.width/2 - titleImg.width/4,50,titleImg.width/2,titleImg.height/2)
             }
     
             // Making the Player Start Text blink
@@ -979,13 +986,18 @@ class GameView{
                 ctx.lineWidth = 1
                 ctx.font = '2.5rem hyperspace'
                 ctx.strokeText('1 PLAYER', model.width/2-50 ,model.height - 150)
-                ctx.strokeText('ENTER TO START', model.width/2 -95 ,model.height - 100)
+                if(controller.isMobile){
+                    ctx.strokeText('TAP TO START', model.width/2 -70 ,model.height - 100)
+                }else{
+                    ctx.strokeText('ENTER TO START', model.width/2 -95 ,model.height - 100)
+
+                }
                 
             }
 
             // Reset the blink timer on the Outer Block scope
             if(blinkDuration == 0){
-                blinkDuration = 300
+                blinkDuration = 360
             }
 
             //Decrease the Blinker
@@ -994,7 +1006,12 @@ class GameView{
             },model.FPS)
             
             // Screen Specific Event Handler
-            window.addEventListener('keydown',controller.startGame)
+            if(controller.isMobile){
+                window.addEventListener('click',controller.startGame)
+            }else{
+                window.addEventListener('keydown',controller.startGame)
+
+            }
             //Assigning the value of the requestAnimationFrame to a variable
            view.startRaF= requestAnimationFrame(startAnimationLoop)
     
@@ -1003,7 +1020,7 @@ class GameView{
         cancelAnimationFrame(view.gameRaF)
         cancelAnimationFrame(view.endRaF)
         
-        //Requesting StartAnimationLoop
+        //Requesting Animation Loop for the Start Screen
         requestAnimationFrame(startAnimationLoop)
     }
 
@@ -1012,37 +1029,73 @@ class GameView{
      * @description Contains the contextual information for visual rendering of the game screen
      */
     gameScreen(){
-        // Switching the flags of the sceens-Debugging Purpose only
+        // Switching the flags of the screens-Debugging Purpose only
         this.game = true
         this.start = false
 
-        //Games Global Scope
-        // Create a New Ship object on the global scope
-        spaceship = new ShipObject(
-             model.width /2,
-             model.height/2,
-             30,
-             90,
-             360,
-             false,
-             {x:0,y:0}
-         );
-     
-        //Creating an asteroid Field
+        //Games Block Scope
+
         if(controller.isMobile) {
+              // Create a New Ship object on the global scope
+            spaceship = new ShipObject(
+                model.width /2,
+                model.height/2,
+                20,//Reducing the size to fit better on smaller screens
+                90,
+                360,
+                false,
+                {x:0,y:0}
+            );
             //Reducing the number of asteroids to prevent screen clutter on lower sizes
             model.createAsteroidField(randomNumber(2,6))
         }else{
+              // Create a New Ship object on the global scope
+            spaceship = new ShipObject(
+                model.width /2,
+                model.height/2,
+                30,
+                90,
+                360,
+                false,
+                {x:0,y:0}
+            );
             model.createAsteroidField(randomNumber(5,13))
         }
-        //  Hiding the JS-output Overlay  
-         outputDisplay.classList.add('hide')
-         
+        // Clearing the outputDisplay
+        outputDisplay.innerHTML=""
+        //  Creating Controller GUI for mobile displays
+        if(controller.isMobile){
+            // Creating a Container Div for th GUI elements to be contained in
+            let mobileGUI = document.createElement('div')
+            // Applying CSS Class
+            mobileGUI.classList.add('container-rotateButtons')
+            // Appending it to the DOM
+            outputDisplay.appendChild(mobileGUI)
+            
+            let btn_rotateLeft = document.createElement('button')
+            btn_rotateLeft.classList.add('btn-rotateLeft')
+            
+            let btn_rotateRight = document.createElement('button')
+            btn_rotateRight.classList.add('btn-rotateRight')
+            
+            let btn_column = document.createElement('div')
+            btn_column.classList.add('btn-column')
+            
+            let btn_thrust = document.createElement('button')
+            btn_thrust.classList.add('btn-thrust')
+            
+            let btn_laser = document.createElement('button')
+            btn_laser.classList.add('btn-laser')
+            
+            btn_column.append(btn_laser,btn_thrust)
+            mobileGUI.append(btn_rotateLeft,btn_column,btn_rotateRight)
+
+        }
          //Cancelling all previous versions of Request Animation Frames that might still persist on the window
          cancelAnimationFrame(view.startRaF)
          cancelAnimationFrame(view.gameRaF)
          cancelAnimationFrame(view.endRaF)
-        // Reuesting Animation Loop for the Game Screen
+        // Requesting Animation Loop for the Game Screen
          requestAnimationFrame(view.gameAnimationLoop)
         
     }
@@ -1084,7 +1137,7 @@ class GameView{
                 //Reducing the number of asteroids to prevent screen clutter on lower sizes
                 model.createAsteroidField(randomNumber(2,6))
             }else{
-                model.createAsteroidField(randomNumber(5,13))
+                model.createAsteroidField(randomNumber(5,10))
             }
         }
         //Drawing each asteroid on the screen
@@ -1107,15 +1160,24 @@ class GameView{
         }
 
         //Remove Event Listeners from the previous Screen
+
+        window.removeEventListener('click',controller.startGame)
         window.removeEventListener('keydown',controller.startGame)
 
-        //Apply the keyboard event Listeners
-        window.addEventListener('keydown',controller.keyDown)
-        window.addEventListener('keyup',controller.keyUp)
+        //Apply the event Listeners
+        if(!controller.isMobile){
+            window.addEventListener('keydown',controller.keyDown)
+            window.addEventListener('keyup',controller.keyUp)
+        }
+        else{
+           window.addEventListener('pointerdown',controller.pointerDown) 
+           window.addEventListener('pointerup',controller.pointerUp) 
+        }
 
         // Assigning the requestAnimationFrame to a variable
         view.gameRaF = window.requestAnimationFrame(view.gameAnimationLoop)
     }
+
     /**
      * @method endScreen
      * @description contains the contextual information for the rendering the contents on the End Screen
@@ -1233,7 +1295,13 @@ class GameView{
         highScoresOutput.classList.add('highScoresDisplay')
         // Append to the DOM
         highScoresOutput.append(highScoresTable)
-        
+        //This is the author credits that would be sent to the DOM
+        outputDisplay.innerHTML=
+        `
+            <h2 class='credits'>
+            created by aFuzzyBear - 2020
+            </h2>
+        `
         // Create a DOM Element to display the winner's Screen text
         let winnersText = document.createElement('div')
         // Apply a CSS class to the element
@@ -1314,7 +1382,7 @@ class GameView{
         // Request the AnimationLoop
         requestAnimationFrame(endAnimationLoop)
     }
-    
+
 }   
 
 /**
@@ -1328,8 +1396,7 @@ class GameController{
 
             window.addEventListener('mousedown',this.removeDefault)
             window.addEventListener('keydown',this.removeDefault)
-            
-     
+                        
     }
     /**
      * @this this.isMobile - Tests if the platform is a Mobile device or not
@@ -1347,84 +1414,71 @@ class GameController{
     /**
      * @method removeDefault
      * @param {EventTarget} event 
-     * Removes the event default behavious from interfering with the DOM
+     * Removes the event default behaviours from interfering with the DOM
      */
     removeDefault(event){
         // Prevent default behaviour from causing DOM default actions to override the game
         event.preventDefault()
     }
+    
+    // Methods to move the ship
     /**
-     * @method keyDown
-     * @param {KeyboardEvent} event 
-     * Applies the relevant Handler application when the keys are pressed 
+     * @method spaceshipRotateClockwise
+     * @description Rotate The Ship Clockwise
      */
-    keyDown(event){
-        // Applying EventHandlers when keys are pressed
-        switch(event.code){
-            case "ArrowUp":
-                // Remove the default behaviour of the event to move the page about
-                event.preventDefault()
-                spaceship.thrusting = true
-                break
-            case "KeyW":
-                //Start Ship Thrusting
-                spaceship.thrusting = true
-                break
-            case "ArrowRight":
-                event.preventDefault()
-                spaceship.rot = -convertRadians(spaceship.TURN_DEG) / model.FPS
-                break
-            case "KeyD":
-                //Rotate Ship Anti-Clockwise
-                spaceship.rot = -convertRadians(spaceship.TURN_DEG) / model.FPS
-                break
-            case "ArrowLeft":
-                event.preventDefault()
-                spaceship.rot = convertRadians(spaceship.TURN_DEG) / model.FPS
-                break
-            case "KeyA":
-                //Rotate Ship Clockwise
-                spaceship.rot = convertRadians(spaceship.TURN_DEG) / model.FPS
-                break
-            case "Space":
-                event.preventDefault()
-                //shoot laser
-                spaceship.shootLasers();
-                break
-        }
+    spaceshipRotateClockwise(){
+        return spaceship.rot = convertRadians(spaceship.TURN_DEG) / model.FPS
+    }
 
-    }
-   
     /**
-     * @method
-     * @param {KeyboardEvent} event 
-     * Removes the relevant Handler application when the keys are released 
+     * @method spaceshipRotateAntiClockwise
+     * @description Rotate the Spaceship AntiClockwise
      */
-    keyUp(event){
-        switch(event.code){
-            case "ArrowUp":
-            case "KeyW":
-                //Stop Thrusting
-                spaceship.thrusting = false
-                break
-            case "ArrowRight":
-            case "KeyD":
-                //Rotate 
-                spaceship.rot = 0
-                break
-            case "ArrowLeft":
-            case "KeyA":
-                //Start Thrusting
-                spaceship.rot = 0
-                break
-        }    
+    spaceshipRotateAntiClockwise(){
+        return spaceship.rot = -convertRadians(spaceship.TURN_DEG) / model.FPS
     }
+
+    /**
+     * @method spaceshipRotateStop
+     * @description Stops the ship from rotating
+     */
+    spaceshipRotateStop(){
+        // Stop the Ship from rotating
+        return spaceship.rot = 0
+    }
+    /**
+     * @method spaceshipThrusting
+     * @param {Boolean} trueOrFalse
+     * @description Switches the Spaceship Thrusting Flag to True if the thrust is Active, False if the Thrust is Deactivated
+     *  
+     */
+    spaceshipThrusting(trueOrFalse){
+        // Move the Ship True is Thrusting False is not Thrusting
+        return spaceship.thrusting = trueOrFalse
+    }
+    /**
+     * @method spaceshipShootLaser
+     * @description Fires the laser
+     */
+    spaceshipShootLaser(){
+        // Fire the Lasers
+        return spaceship.shootLasers();
+    }
+    
+    //Methods that control the  Game Views
+    
     /**
      * @method startGame
-     * @param {KeyboardEvent} event 
-     * Instructs to start the game when the key is pressed
+     * @param {PointerEvent} click
+     * @param {KeyboardEvent} Enter 
+     * @description Instructs the game to start 
      */
     startGame(event){
+        switch(event.type){
+            case 'click':
+                view.gameScreen()
+                break
+        }
         switch(event.code){
             case 'Enter':
                 view.gameScreen()
@@ -1438,12 +1492,12 @@ class GameController{
     restart(){
         // Clearing the previous game data
         model = null
-        
+        // clearing the values from the score displays
         livesDisplay.innerText = ''
         scoreDisplay.innerText = ''
         currentHighScoreDisplay.innerText = ''
-        //re-instantiating the game model 
         
+        //re-instantiating the game model 
         model = new GameModel()
         
         //Display the start screen
@@ -1457,8 +1511,132 @@ class GameController{
         // Display the Start Screen
         return view.startScreen()
     }
+
+    // Event Handlers
+
+    /**
+     * @method keyDown
+     * @param {KeyboardEvent} event 
+     * Applies the relevant Handler application when the keys are pressed 
+     */
+    keyDown(event){
+        // Applying EventHandlers when keys are pressed
+        switch(event.code){
+            case "ArrowUp":
+                // Remove the default behaviour of the event to move the page about
+                event.preventDefault()
+                controller.spaceshipThrusting(true)
+                break
+            case "KeyW":
+                //Start Ship Thrusting
+                controller.spaceshipThrusting(true)
+                break
+            case "ArrowRight":
+                event.preventDefault()
+                controller.spaceshipRotateAntiClockwise()
+                break
+            case "KeyD":
+                //Rotate Ship Anti-Clockwise
+                controller.spaceshipRotateAntiClockwise()
+                break
+            case "ArrowLeft":
+                event.preventDefault()
+                controller.spaceshipRotateClockwise()
+                break
+            case "KeyA":
+                //Rotate Ship Clockwise
+                controller.spaceshipRotateClockwise()
+                break
+            case "Space":
+                //shoot laser
+                event.preventDefault()
+                controller.spaceshipShootLaser()
+                break
+        }
+
+    }
    
-    
+    /**
+     * @method keyUp
+     * @param {KeyboardEvent} event 
+     * Removes the relevant Handler application when the keys are released 
+     */
+    keyUp(event){
+        switch(event.code){
+            case "ArrowUp":
+                //Stop Thrusting
+                event.preventDefault()
+                controller.spaceshipThrusting(false)
+                break
+            case "KeyW":
+                //Stop Thrusting
+                controller.spaceshipThrusting(false)
+                break
+            case "ArrowRight":
+                //Rotate 
+                event.preventDefault()
+                controller.spaceshipRotateStop()
+                break
+            case "KeyD":
+                //Rotate 
+                controller.spaceshipRotateStop()
+                break
+            case "ArrowLeft":
+                event.preventDefault()
+                //Start Thrusting
+                controller.spaceshipRotateStop()
+                break
+            case "KeyA":
+                //Start Thrusting
+                controller.spaceshipRotateStop()
+                break
+        }    
+    }
+
+   /**
+    * @method pointerDown
+    * @param {PointerEvent} event 
+    * @description Applies the relevant Handler application when the buttons are pressed on the mobileGUI
+    */
+    pointerDown(event){
+        event.preventDefault()
+        
+        switch (event.target.className) {
+            case 'btn-rotateLeft':
+                controller.spaceshipRotateClockwise()
+                break;
+            case 'btn-rotateRight':
+                controller.spaceshipRotateAntiClockwise()
+                break;
+            case 'btn-thrust':
+                controller.spaceshipThrusting(true)
+                break;
+            case 'btn-laser':
+                controller.spaceshipShootLaser()
+                break
+        }
+    }
+    /**
+    * @method pointerUp
+    * @param {PointerEvent} event 
+    * @description Removes the relevant Handler application when the buttons are pressed on the mobileGUI
+    */
+    pointerUp(event){
+        event.preventDefault()
+        switch (event.target.className) {
+            case 'btn-rotateLeft':
+                controller.spaceshipRotateStop()
+                break;
+                
+            case 'btn-rotateRight':
+                controller.spaceshipRotateStop()
+                break;
+        
+            case 'btn-thrust':
+                controller.spaceshipThrusting(false)
+                break;
+        }
+    }
 }
 //Global Scope
 let spaceship,model
@@ -1468,3 +1646,5 @@ let view = new GameView()
 let controller = new GameController()
 // Making the Game Load when the DOM contents have finished Loading
 window.addEventListener('load',controller.onLoad())
+
+
