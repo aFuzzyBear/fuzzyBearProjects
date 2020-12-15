@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Preloading assets -->
+    <link rel="preload" href="asteroidsStylesheet.css" as="style">
+    <link rel="preload" href="asteroidsGame.js" as="script">
+    <link rel="preload" as="image" type="image/svg+xml" href="assets/graphics/asteroids-artwork-left-side-panel-optimised.svg">
+    <link rel="preload" as="image" type="image/svg+xml" href="assets/graphics/asteroids-artwork-right-side-panel-optimised.svg">
+    <link rel="preload" as="image" type="image/svg+xml" href="assets/graphics/asteroids-artwork-top-panel-replaced.svg">
+    <link rel="preload" as="font" type="font/ttf" href="assets/fonts/Trispace/Trispace-VariableFont_wdth,wght.ttf" crossorigin>
+    <link rel="preload" as="font" type="font/otf" href="assets/fonts/hyperspace/Hyperspace.otf" crossorigin>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="asteroidsStylesheet.css">
+    <!-- SEO META  -->
+    <meta name="description" content="A Replica of the timeless classic: Asteroids by Atari, recreated by aFuzzyBear">
+    <meta property ="og:title" content="Asteroids Replica written in Vanilla JS using the OOP and MVC model">
+    <meta property ="og:url" content="https://fuzzybear-projects.netlify.app/projects/asteroids%20game%20-%20build%20repo/asteroids">
+    <meta property ="og:image" content="assets/graphics/asteroids-artwork-top-panel.png">
+    <!-- Flavicon Links and Web PWA manifest-->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/graphics/icons/Asteroid_Icon_57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/graphics/icons/Asteroid_Icon_60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/graphics/icons/Asteroid_Icon_72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/graphics/icons/Asteroid_Icon_76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/graphics/icons/Asteroid_Icon_114">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/graphics/icons/Asteroid_Icon_120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/graphics/icons/Asteroid_Icon_144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/graphics/icons/Asteroid_Icon_152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/graphics/icons/Asteroid_Icon_180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="assets/graphics/icons/Asteroid_Icon_192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/graphics/icons/Asteroid_Icon_32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/graphics/icons/Asteroid_Icon_96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/graphics/icons/Asteroid_Icon_16.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="assets/graphics/icons/Asteroid_Icon_144.png">
+    <meta name="theme-color" content="#FFD700">
+
+    <title>Asteroids</title>
+</head>
+
+<body>
+
+      
+<div class="container-parent">
+    
+          <div class="panel-left">
+              
+          </div>
+          <div class="container-arcade">
+            <div class="panel-top">
+               
+            </div>
+            <div class="panel-center">
+                <div class="container-game">
+                    <div class="container-score">
+                        <p id="score" class="display-score"></p>
+                        <p id="highScore" class="display-highScore"></p>
+                        <p id="lives" class="display-lives"></p>
+                    </div>
+                    <div class="gameLayer">
+                        <canvas id="gameCanvas">
+                            <p>Huh, your browser doesn't seem to support HTML5! Sorry bud,</p>
+                        </canvas>
+                    </div>
+                    
+                    <div class="js-output">
+                        <!-- JS-OUTPUT GOES HERE -->
+                    </div>
+                </div>
+            </div>
+            <div class="panel-console">
+                <div class="container-guide">
+                    <div class="guide-howToPlay" >
+                        <h2 class="guide-title">
+                            How To Play:
+                        </h2>
+                        <p>
+                            The purpose is to destroy as many Asteroids as possible within the number of allotted lives and to beat the highest score in the game. 
+                        </p>
+                    </div>
+                    
+                    <div class="container-controls">
+                        <div class="controls keyUp">
+                            <kbd>w</kbd>/<kbd>&uarr;</kbd>
+                        </div>
+                        <div class="break-row"></div>
+                        <div class="controls keyLeft">
+                            <kbd>a</kbd>/<kbd>&larr;</kbd>
+                        </div>
+                        <div class="controls keyRight">
+                            <kbd>d</kbd>/<kbd>&rarr;</kbd>
+                        </div>
+                        <div class="break-row"></div>
+                        <div class="controls spacebar">
+                            <span>Spacebar</span>
+                        </div>
+                    </div>
+                    <div class="container-iconography">
+                        <div class="icon-wrapper">
+                            <object data="assets/graphics/icon-largeAsteroid-optimised.svg" type="image/svg+xml" class="icon-largeAsteroid" alt="icon-largeAsteroid worth 20 points in the game"></object>
+                            <p class="icon-text">20pts</p>
+                        </div>
+                        <div class="icon-wrapper">
+                            <object data="assets/graphics/icon-mediumAsteroid-optimied.svg" type="image/svg+xml" class="icon-mediumAsteroid" alt="icon-mediumAsteroid worth 50 points in the game"></object>
+                            <p class="icon-text">50pts</p>
+                        </div>
+                        <div class="icon-wrapper">
+                            <object data="./assets/graphics/icon-smallAsteroid-optimised.svg" type="image/svg+xml" class="icon-smallAsteroid" alt="icon-smallAsteroid worth 100 points in the game"></object>
+                            <p class="icon-text">100pts</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+          </div>
+          <div class="panel-right"></div>
+</div>
+</body>
+<script src="asteroidsGame.js" defer></script>
+</html>

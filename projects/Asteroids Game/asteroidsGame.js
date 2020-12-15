@@ -57,6 +57,23 @@ const currentHighScoreDisplay = document.getElementById('highScore');
  */
 const livesDisplay = document.getElementById('lives');
 
+/**
+ * @constant titleImg
+ * @type {SVGImageElement}
+ * @description Holds the Asteroid Title Img in memory for use in the script
+ */
+const titleImg = new Image();
+titleImg.src = './assets/graphics/asteroids-arcade-game-logo-sticker.svg'
+/**
+ * @function getImgSize
+ * Applies a scaling ratio to the image height and width to work with the canvas.
+ */
+function getImgSize(){
+    let scale = Math.min(model.width/titleImg.width, model.height/titleImg.height)*devicePixelRatio
+    titleImg.width = titleImg.width/scale
+    titleImg.height = titleImg.height/scale
+
+}
 
 
 // Global Functions
@@ -142,7 +159,7 @@ class GameModel{
         this.shipExploding = false
         
         /**@this this.lives -**PRIVATE** Number of game lives*/
-        this._lives = Number(5)
+        this._lives = Number(3)
 
         /**@this this._playerName - **PRIVATE** stores the players name */
         this._playerName = String()
@@ -157,8 +174,12 @@ class GameModel{
          */
         this._height= Number();
         
-       
-        
+        this.userSettingsFromStorage = localStorage.getItem('userSettings')? JSON.parse(localStorage.getItem('userSettings')) : null
+        /**@this this.Userthrust - **PUBLIC** Sets the Thrust for the game */
+        this.spaceship_thrust =this.userSettingsFromStorage ? this.userSettingsFromStorage.thrust : Number(2)
+        this.spaceship_colorStroke =this.userSettingsFromStorage ? this.userSettingsFromStorage.colorStroke : String('#FFFFFF')
+        this.spaceship_colorFill =this.userSettingsFromStorage ? this.userSettingsFromStorage.colorFill : String('#FFFFFF')
+        this.spaceship_colorLaser =this.userSettingsFromStorage ? this.userSettingsFromStorage.colorLaser : String('#FF0000')
         //Getting the Width and Height as soon as the Window loads
         window.addEventListener('load',()=>{
             this.getCanvasDimensions()
@@ -195,8 +216,51 @@ class GameModel{
         return +this._lives.toFixed(0)
     }
 
-    //Methods
+    get get_spaceshipThrust(){
+        return +this.spaceship_thrust
+    }
 
+    set set_userThrust(speed){
+        return this.spaceship_thrust = Number(speed)
+    }
+
+    get get_userColorStroke(){
+        return this.spaceship_colorStroke
+    }
+    set set_userColorStroke(color){
+        return this.spaceship_colorStroke = String(color)
+    }
+    get get_userColorFill(){
+        return this.spaceship_colorFill
+    }
+    set set_userColorFill(color){
+        return this.spaceship_colorFill = String(color)
+    }
+    get get_userColorLaser(){
+        return this.spaceship_colorLaser
+    }
+    set set_userColorLaser(color){
+        return this.spaceship_colorLaser = String(color)
+    }
+
+    //Methods
+    saveUserSettings(){
+        let settings = {
+            colorStroke: this.get_userColorStroke,
+            colorFill: this.get_userColorFill,
+            colorLaser: this.get_userColorLaser,
+            thrust: this.get_spaceshipThrust
+        }
+        localStorage.setItem('userSettings',JSON.stringify(settings))
+    }
+    highScoresReset(){
+        if(confirm('Are you sure you wish to delete the HighScores from memory?')){
+            localStorage.clear()
+            this.highScoresFromStorage = null
+            this.previousHighScore = 0
+        }
+
+    }
     /**
      * @method checkScore 
      * @description Checks if the current score is greater than the previous score, Switching the *view.newHighScore* to true
@@ -284,19 +348,17 @@ class GameModel{
             spaceship = null;
             
         }
+        let size = (controller.isMobile)?15:30
         // Create a new Spaceship
-        let size = (controller.isMobile) ? 15 : 30
-                // Create a New Ship object on the global scope
-            spaceship = new ShipObject(
-                model.width /2,
-                model.height/2,
-                size,
-                90,
-                360,
-                false,
-                {x:0,y:0}
-            );
-          
+        let newSpaceship = new ShipObject(
+            model.width /2,
+            model.height/2,
+            size,
+            90,
+            360,
+            false,
+            {x:0,y:0}
+        )
          //Making the New Ship immune to Being Exploded
          newSpaceship.immune = true
          //Stop the Explosion
@@ -520,8 +582,9 @@ class ShipObject extends BasicObject{
         /**
          * @this this.SHIP_THRUST 
          * @description CONSTANT: Acceleration of the spaceship, 2px/sec^2
+         * Getting the ship thrust from user settings
          */
-        this.SHIP_THRUST = Number(2); // acceleration of the spaceship, px/sec^2
+        this.SHIP_THRUST = model.get_spaceshipThrust; // acceleration of the spaceship, px/sec^2
      
         /**
          * @this this.TURN_DEG
@@ -540,12 +603,12 @@ class ShipObject extends BasicObject{
     draw(){
         if(this.immune){
             //Make the Spaceship golden 
-            ctx.strokeStyle = "gold";
+            ctx.strokeStyle = "gold"
             ctx.fillStyle = "gold"
         }else{
             //Giving it some Normal Colors
-            ctx.strokeStyle = "white";
-            ctx.fillStyle = "white"
+            ctx.strokeStyle = model.get_userColorStroke
+            ctx.fillStyle = model.get_userColorFill
         }
        //The outer Triangle
        ctx.beginPath();
@@ -685,12 +748,17 @@ class ShipObject extends BasicObject{
             //Calculate the distance travelled
             this.laserArray[laserIndex].distanceTravelled += 
                 Math.sqrt(this.laserArray[laserIndex].vX**2 + this.laserArray[laserIndex].vY**2);
-
+            // Desktop Displays
             if(!controller.isMobile && this.laserArray[laserIndex].distanceTravelled > 
                     this.laserDistance * model.width){
                         this.laserArray.splice(laserIndex,1)
                     }
+            // Making Adjustments if the device is in portrait mode - we take the distance from the height of the viewport
             if(controller.isMobile && window.innerHeight > window.innerWidth && this.laserArray[laserIndex].distanceTravelled > this.laserDistance * model.height){
+                this.laserArray.splice(laserIndex,1)
+            }
+            // Making Adjustments if the device is in landscape mode - we take the distance from the height of the viewport
+            if(controller.isMobile &&window.innerWidth > window.innerHeight && this.laserArray[laserIndex].distanceTravelled > this.laserDistance * model.width){
                 this.laserArray.splice(laserIndex,1)
             }
         }
@@ -698,7 +766,7 @@ class ShipObject extends BasicObject{
         //Draw each laser
         this.laserArray.forEach((laser,index) => {
 
-            ctx.fillStyle = "red"
+            ctx.fillStyle = model.get_userColorLaser
             ctx.beginPath();
             ctx.arc(laser.x,laser.y,this.SHIP_SIZE/8,0,Math.PI*2,false);
             ctx.fill();
@@ -888,6 +956,8 @@ class AsteroidObject extends BasicObject {
     
 }
 
+
+
 class GameView{
     constructor(){
         //Flags used for debugging...
@@ -895,6 +965,7 @@ class GameView{
         this.game = false
         this.end = false
 
+        this.settings=false
         /**
          * @this this.newHighScore - Flag for if a new high Score is set to record a view change from winners text to game over display
          */
@@ -903,6 +974,8 @@ class GameView{
        //RequestAnimationFrames reference numbers
        /**@this this.startRaF - Registers the RequestAnimationFrame number for the start screen */ 
        this.startRaF
+       /**@this this.settingsRaF - Registers the RequestAnimationFrame number for the settings screen */ 
+       this.settingsRaF
        /**@this this.gameRaF - Registers the RequestAnimationFrame number for the game screen*/ 
        this.gameRaF    
        /**@this this.endRaF - Registers the RequestAnimationFrame number  for the end screen*/ 
@@ -919,43 +992,48 @@ class GameView{
         this.start = true
         
         //Block scope
-
+        outputDisplay.innerHTML=""
         //Creating an asteroid Field
-        if(controller.isMobile) {
-            //Reducing the number of asteroids to prevent screen clutter on lower sizes and mobile devices
-            model.createAsteroidField(randomNumber(2,6))
-        }else{
-            model.createAsteroidField(randomNumber(5,13))
+        if(model.asteroidField.length == 0){
+
+            if(controller.isMobile) {
+                //Reducing the number of asteroids to prevent screen clutter on lower sizes and mobile devices
+                model.createAsteroidField(randomNumber(2,6))
+            }else{
+                model.createAsteroidField(randomNumber(5,13))
+            }
         }
 
         
         // Getting the Title screen Image
         
-        let titleImg = new Image();
-        titleImg.src = './assets/graphics/asteroids-arcade-game-logo-sticker.svg'
-        /**
-         * @function getImgSize
-         * Applies a scaling ratio to the image height and width to work with the canvas.
-         */
-        function getImgSize(){
-            let scale = Math.min(model.width/titleImg.width, model.height/titleImg.height)*devicePixelRatio
-            titleImg.width = titleImg.width/scale
-            titleImg.height = titleImg.height/scale
-    
-        }
         document.addEventListener('resize',getImgSize) // This is to keep Image responsive to the viewport being resized.
         
         //Setting a value for the Blinker duration
         let blinkDuration = 360;
+        let btnStartGame = document.createElement('button')
+        btnStartGame.classList.add('btn-start')
+        btnStartGame.addEventListener('click',()=>{
+            this.gameScreen()
+        })
         
-        //This is the output text that would be created and sent to the dom
-        outputDisplay.innerHTML=
-        `
-            <h2 class='credits'>
-            created by aFuzzyBear - 2020
-            </h2>
-        `
+
+        let btnSettings = document.createElement('button')
+        btnSettings.classList.add('btn-settings')
+        btnSettings.setAttribute('name','Game Settings')
+        btnSettings.addEventListener('click',()=>{
+            this.settingsScreen()
+        })
         
+        let credits = document.createElement('h2')
+        credits.classList.add('credits')
+        credits.innerText = "created by aFuzzyBear - 2020"
+
+ 
+        
+        controller.isMobile ? outputDisplay.append(btnStartGame,btnSettings,credits) : outputDisplay.append(btnSettings,credits)
+
+
         /**
          * @function startAnimationLoop
          * The Animation loop for the Start Screen
@@ -963,6 +1041,9 @@ class GameView{
         function startAnimationLoop(){
             // Cancelling any previous StartScreen Animation Frame
             cancelAnimationFrame(view.startRaF)
+            cancelAnimationFrame(view.settingsRaF)
+            cancelAnimationFrame(view.gameRaF)
+            cancelAnimationFrame(view.endRaF)
             // Clears the Display
             ctx.clearRect(0,0,model.width,model.height);
             // Painting it black
@@ -992,9 +1073,7 @@ class GameView{
                     ctx.strokeText('TAP TO START', model.width/2 -70 ,model.height - 100)
                 }else{
                     ctx.strokeText('ENTER TO START', model.width/2 -95 ,model.height - 100)
-
                 }
-                
             }
 
             // Reset the blink timer on the Outer Block scope
@@ -1007,9 +1086,38 @@ class GameView{
                 blinkDuration -- 
             },model.FPS)
             
+            
             // Screen Specific Event Handler
             if(controller.isMobile){
-                window.addEventListener('click',controller.startGame)
+                // btnSettings.addEventListener('click',()=>{
+                //     this.settingsScreen()
+                // })
+                
+                // outputDisplay.addEventListener('click',controller.startGame)
+                // window.addEventListener('click',(event)=>{
+                //     switch(event.target.classList){
+                //         case 'btn-settings':
+                //             view.settingsScreen()
+                //         default:
+                //             view.gameScreen()
+                //     }
+
+                // })
+
+                // window.addEventListener('click',(event)=>{
+                //     console.log(event.target.classList.contains('js-output'))
+                // })
+                // outputDisplay.addEventListener('click',(event)=>{
+                //     console.log('js-output event',event)
+                //     switch(event.target){
+                //         case ('js-output'):
+                //             console.log('js output',event)
+                //             break
+
+
+                //     }
+                // })
+               
             }else{
                 window.addEventListener('keydown',controller.startGame)
 
@@ -1018,14 +1126,173 @@ class GameView{
            view.startRaF= requestAnimationFrame(startAnimationLoop)
     
         }
-        // Cancelling  any previous Game and End Screen requestAnimationFrame
-        cancelAnimationFrame(view.gameRaF)
-        cancelAnimationFrame(view.endRaF)
-        
-        //Requesting Animation Loop for the Start Screen
-        requestAnimationFrame(startAnimationLoop)
-    }
 
+      
+        //Requesting Animation Loop for the Start Screen
+        startAnimationLoop()
+    }
+    settingsScreen(){
+        //Block Scope
+        let btnSettings = document.querySelector("body > div > div.container-arcade > div.panel-center > div > div.js-output > button")
+
+        if(btnSettings) btnSettings.classList.add('hide')
+
+    
+        document.addEventListener('resize',getImgSize) 
+
+        let wrapper_settingsTitle=document.createElement('div')
+        wrapper_settingsTitle.classList.add('wrapper-title')
+        let title = document.createElement('h2')
+        title.innerText = 'Settings'.toUpperCase()
+        wrapper_settingsTitle.append(title)
+
+        let wrapper_inputSpaceshipColorStroke=document.createElement('div')
+        wrapper_inputSpaceshipColorStroke.classList.add('wrapper' ,'inputColorStroke')
+
+        let input_spaceshipColorStroke = document.createElement('input')
+        Object.assign(input_spaceshipColorStroke,{
+            type:'color',
+            id:'input_spaceshipColorStroke',
+            name: 'input_spaceshipColorStroke',
+            value: `${model.get_userColorStroke}`,
+        })
+
+        input_spaceshipColorStroke.classList.add('input-color')
+        input_spaceshipColorStroke.addEventListener('input',controller.inputShipStokeColor)
+        let label_spaceshipColorStroke = document.createElement('label')
+        label_spaceshipColorStroke.setAttribute('for','input_spaceshipColorStroke')
+        label_spaceshipColorStroke.classList.add('label')
+        label_spaceshipColorStroke.innerText = "Spaceship Primary Color"
+        wrapper_inputSpaceshipColorStroke.append(label_spaceshipColorStroke,input_spaceshipColorStroke)
+        
+
+        let wrapper_inputSpaceshipColorFill=document.createElement('div')
+        wrapper_inputSpaceshipColorFill.classList.add('wrapper','inputColorFill')
+        let input_spaceshipColorFill = document.createElement('input')
+        Object.assign(input_spaceshipColorFill,{
+            type:'color',
+            id:'input_spaceshipColorFill',
+            name: 'input_spaceshipColorFill',
+            value: `${model.get_userColorFill}`
+        })
+        input_spaceshipColorFill.classList.add('input-color')
+        input_spaceshipColorFill.addEventListener('input',controller.inputShipFillColor)
+        let label_spaceshipColorFill = document.createElement('label')
+        label_spaceshipColorFill.setAttribute('for','input_spaceshipColorFill')
+        label_spaceshipColorFill.classList.add('label')
+        label_spaceshipColorFill.innerText = "Spaceship Secondary Color"
+        wrapper_inputSpaceshipColorFill.append(label_spaceshipColorFill,input_spaceshipColorFill)
+        
+       
+        
+        let wrapper_inputSpaceshipColorLaser=document.createElement('div')
+        wrapper_inputSpaceshipColorLaser.classList.add('wrapper','inputColorLaser')
+        let input_spaceshipColorLaser = document.createElement('input')
+        Object.assign(input_spaceshipColorLaser,{
+            type:'color',
+            id:'input_spaceshipColorLaser',
+            name: 'input_spaceshipColorLaser',
+            value:`${model.get_userColorLaser}`
+        })
+        input_spaceshipColorLaser.classList.add('input-color')
+        input_spaceshipColorLaser.addEventListener('input',controller.inputShipLaserColor)
+        let label_spaceshipColorLaser = document.createElement('label')
+        label_spaceshipColorLaser.setAttribute('for','input_spaceshipColorLaser')
+        label_spaceshipColorLaser.classList.add('label')
+        label_spaceshipColorLaser.innerText="Spaceship Laser Color"
+        wrapper_inputSpaceshipColorLaser.append(label_spaceshipColorLaser,input_spaceshipColorLaser)
+        
+        let wrapper_inputSpaceshipThrust=document.createElement('div')
+        wrapper_inputSpaceshipThrust.classList.add('wrapper','inputThrust')
+        let input_spaceshipThrust = document.createElement('input')
+        Object.assign(input_spaceshipThrust,{
+            type:'range',
+            id:'input_spaceshipThrust',
+            name: 'input_spaceshipThrust',
+            min:'1',
+            max:'3',
+            value:`${model.get_spaceshipThrust}`,
+            step:'0.1'
+        })
+        input_spaceshipThrust.classList.add('input-range')
+        input_spaceshipThrust.addEventListener('input',controller.inputShipThrust)
+        let label_spaceshipThrust = document.createElement('label')
+        label_spaceshipThrust.setAttribute('for','input_spaceshipThrust')
+        label_spaceshipThrust.classList.add('label')
+        label_spaceshipThrust.innerText = "Spaceship Speed"
+        wrapper_inputSpaceshipThrust.append(label_spaceshipThrust,input_spaceshipThrust)
+        
+        let wrapper_btnReset=document.createElement('div')
+        wrapper_btnReset.classList.add('wrapper_btnReset')
+        let btn_clearMemory = document.createElement('button')
+        btn_clearMemory.classList.add('btn-reset')
+        btn_clearMemory.innerText = 'Reset Game Data'
+        wrapper_btnReset.append(btn_clearMemory)
+
+        btn_clearMemory.addEventListener('click',controller.clearMemory)
+        
+        let wrapper_btnClose=document.createElement('div')
+        wrapper_btnClose.classList.add('wrapper_btnClose')
+        let btn_closeSettings = document.createElement('button')
+        btn_closeSettings.classList.add('btn-close')
+        btn_closeSettings.innerText = 'Close'
+        wrapper_btnClose.append(btn_closeSettings)
+
+        btn_closeSettings.addEventListener('click',()=>{
+            view.startScreen()
+        })
+
+        let container_settings = document.createElement('div')
+        container_settings.classList.add('container-settings')
+        let container_spaceshipSettings = document.createElement('div')
+        container_spaceshipSettings.classList.add('container-spaceshipSettings')
+        container_spaceshipSettings.append(wrapper_inputSpaceshipColorStroke,wrapper_inputSpaceshipColorFill,wrapper_inputSpaceshipColorLaser,wrapper_inputSpaceshipThrust)
+
+
+        container_settings.append(wrapper_settingsTitle,wrapper_btnClose,container_spaceshipSettings,wrapper_btnReset)
+
+        outputDisplay.append(container_settings)       
+
+        function settingsAnimationLoop(){
+
+             // Cancelling any previous StartScreen Animation Frame
+             cancelAnimationFrame(view.startRaF)
+             cancelAnimationFrame(view.settingsRaF)
+             cancelAnimationFrame(view.gameRaF)
+             cancelAnimationFrame(view.endRaF)
+             // Clears the Display
+             ctx.clearRect(0,0,model.width,model.height);
+             // Painting it black
+             ctx.fillStyle = 'black'
+             ctx.fillRect(0,0,model.width,model.height);
+     
+             //Drawing each asteroid on the screen
+             model.asteroidField.forEach((asteroid)=>{
+                 asteroid.draw()
+             })
+             // Making the Title Image responsive to the width of the canvas: 500px 
+             if(model.width < 500){
+     
+                 ctx.drawImage(titleImg, model.width/2 - titleImg.width/6,50,titleImg.width/3,titleImg.height/3)
+             }else{
+                 
+                 ctx.drawImage(titleImg, model.width/2 - titleImg.width/4,50,titleImg.width/2,titleImg.height/2)
+             }
+             
+             // Repopulating the Asteroid Field once they have all been cleared
+            if(model.asteroidField.length === 0) {
+                if(controller.isMobile) {
+                    // Reducing the number of asteroids to prevent screen clutter on lower sizes
+                    model.createAsteroidField(randomNumber(2,6))
+                }else{
+                    model.createAsteroidField(randomNumber(5,10))
+                }
+            }
+            view.settingsRaF = requestAnimationFrame(settingsAnimationLoop)
+        }
+
+        settingsAnimationLoop()
+    }
     /**
      * @method gameScreen
      * @description Contains the contextual information for visual rendering of the game screen
@@ -1036,36 +1303,33 @@ class GameView{
         this.start = false
 
         //Games Block Scope
-
-        if(controller.isMobile) {
-              // Create a New Ship object on the global scope
-            spaceship = new ShipObject(
-                model.width /2,
-                model.height/2,
-                15,//Reducing the size to fit better on smaller screens
-                90,
-                360,
-                false,
-                {x:0,y:0}
-            );
-            //Reducing the number of asteroids to prevent screen clutter on lower sizes
-            model.createAsteroidField(randomNumber(2,6))
+        let shipSize
+        
+        if(controller.isMobile){
+            shipSize = 15
+            model.createAsteroidField(2,6)
         }else{
-              // Create a New Ship object on the global scope
-            spaceship = new ShipObject(
-                model.width /2,
-                model.height/2,
-                30,
-                90,
-                360,
-                false,
-                {x:0,y:0}
-            );
-            model.createAsteroidField(randomNumber(5,13))
+            shipSize = 30
+            model.createAsteroidField(5,10)
         }
+       
+        // Create a New Ship object on the global scope
+        spaceship = new ShipObject(
+        model.width /2,
+        model.height/2,
+        shipSize,
+        90,
+        360,
+        false,
+        {x:0,y:0}
+        );
+        
+        
         // Clearing the outputDisplay
         outputDisplay.innerHTML=""
+        
         //  Creating Controller GUI for mobile displays
+        
         if(controller.isMobile){
             // Creating a Container Div for th GUI elements to be contained in
             let mobileGUI = document.createElement('div')
@@ -1093,12 +1357,9 @@ class GameView{
             mobileGUI.append(btn_rotateLeft,btn_column,btn_rotateRight)
 
         }
-         //Cancelling all previous versions of Request Animation Frames that might still persist on the window
-         cancelAnimationFrame(view.startRaF)
-         cancelAnimationFrame(view.gameRaF)
-         cancelAnimationFrame(view.endRaF)
+
         // Requesting Animation Loop for the Game Screen
-         requestAnimationFrame(view.gameAnimationLoop)
+         this.gameAnimationLoop()
         
     }
     /**
@@ -1106,7 +1367,13 @@ class GameView{
      * @description Demonstrating another way of calling a request Animation Loop outwith the internal closure of a function. Plus this way I can ensure that the game would run independent of anything else, (there was a bug that caused this outcome)
      */
     gameAnimationLoop(){
-        //Clearing the Previous Render
+         // Cancelling all previous versions of Request Animation Frames that might still persist on the window
+        
+        cancelAnimationFrame(view.startRaF)
+        cancelAnimationFrame(view.settingsRaF)
+        cancelAnimationFrame(view.gameRaF)
+        cancelAnimationFrame(view.endRaF)
+        // Clearing the Previous Render
         ctx.clearRect(0,0,model.width,model.height)
         // Create a new Frame
         ctx.fillRect(0,0,model.width,model.height);
@@ -1122,62 +1389,64 @@ class GameView{
                 //  Explode the ship💀
                 spaceship.explodeShip();
 
-                //Timeout's to carry out these functions after a certain period of time.        
+                // Timeout's to carry out these functions after a certain period of time.        
                 setTimeout(model.createNewSpaceShip,1000)
                 
                 setTimeout(()=>{
-                //Removing the ships immunity after 5 secs
+                // Removing the ships immunity after 5 secs
                     spaceship.immune = false
                 
                 },5000)
 
             } 
         }
-
+        // Repopulating the Asteroid Field once they have all been cleared
         if(model.asteroidField.length === 0) {
             if(controller.isMobile) {
-                //Reducing the number of asteroids to prevent screen clutter on lower sizes
+                // Reducing the number of asteroids to prevent screen clutter on lower sizes
                 model.createAsteroidField(randomNumber(2,6))
             }else{
                 model.createAsteroidField(randomNumber(5,10))
             }
         }
-        //Drawing each asteroid on the screen
+
+
+        // Drawing each asteroid on the screen
         model.asteroidField.forEach((asteroid)=>{
             asteroid.draw()
         })
 
-        //Display the Lives Counter on the Screen
+        // Display the Lives Counter on the Screen
         livesDisplay.innerText = `LIVES\n ${model.gameLives}`
         
-        //Display the Highest Score from the previous Game on the Screen
+        // Display the Highest Score from the previous Game on the Screen
         currentHighScoreDisplay.innerText = `HIGH SCORE\n ${(model.currentScore > model.previousHighScore)?'NEW HIGH SCORE': model.previousHighScore}`
 
-        //Display the Score on the Screen
+        // Display the Score on the Screen
         scoreDisplay.innerText = `SCORE\n ${model.currentScore}`
 
-        //Game Over 
+        // Game Over 
         if(model.gameLives == 0){
             view.endScreen()
         }
 
-        //Remove Event Listeners from the previous Screen
+        // Remove Event Listeners from the previous Screen
 
-        window.removeEventListener('click',controller.startGame)
+        outputDisplay.removeEventListener('click',controller.startGame)
         window.removeEventListener('keydown',controller.startGame)
 
-        //Apply the event Listeners
-        if(!controller.isMobile){
+        // Apply the event Listeners
+        if(controller.isMobile){
+            window.addEventListener('pointerdown',controller.pointerDown) 
+            window.addEventListener('pointerup',controller.pointerUp) 
+        }
+        else{
             window.addEventListener('keydown',controller.keyDown)
             window.addEventListener('keyup',controller.keyUp)
         }
-        else{
-           window.addEventListener('pointerdown',controller.pointerDown) 
-           window.addEventListener('pointerup',controller.pointerUp) 
-        }
 
         // Assigning the requestAnimationFrame to a variable
-        view.gameRaF = window.requestAnimationFrame(view.gameAnimationLoop)
+        view.gameRaF = requestAnimationFrame(view.gameAnimationLoop)
     }
 
     /**
@@ -1309,18 +1578,6 @@ class GameView{
         // Apply a CSS class to the element
         winnersText.classList.add('newHighScore')
         // Defining the inner HTML that would be rendered on the DOM
-        // winnersText.innerHTML=
-        //     `
-        //         <div class="title-wrapper">
-        //             <h2>
-        //                 Congratulations on Setting a New High Score
-        //             </h2>
-        //         </div>
-        //         <div class="form-wrapper">
-        //             <input type="text" name="playerName" id="input-playerName" placeholder="Enter Name" pattern="\\w*" onchange="model.playerName()">
-        //             <button type="submit" onclick="model.addScore()">Submit</button>
-        //         </div>
-        //     `
 
         let title_wrapper = document.createElement('div')
         title_wrapper.classList.add="title-wrapper"
@@ -1331,13 +1588,16 @@ class GameView{
         form.classList.add("form-wrapper")
         let inputPlayerName = document.createElement('input')
         inputPlayerName.classList.add('form-input')
-        inputPlayerName.setAttribute('type',"text")
-        inputPlayerName.setAttribute('name',"playerName")
-        inputPlayerName.setAttribute('id',"input-playerName")
-        inputPlayerName.setAttribute('placeholder',"Enter Name Here")
-        inputPlayerName.setAttribute('inputmode',"text")
-        inputPlayerName.setAttribute('autocomplete',"name")
-        // inputPlayerName.setAttribute('onchange','model.playerName()')
+        // Assigning the input properties 
+        Object.assign(inputPlayerName,{
+            type: 'text',
+            name:'playerName',
+            id:'input-playerName',
+            placeholder:'Enter Name',
+            inputmode:'text',
+            autocomplete:'name'
+        })
+        // Applying Event Listener
         inputPlayerName.addEventListener('change',()=>{
             model.playerName()
         })
@@ -1390,8 +1650,9 @@ class GameView{
         function endAnimationLoop(){
             // Another Demonstration of CancelAnimation Frame this time within a requestAnimation recursive Loop
             cancelAnimationFrame(view.startRaF)
+            cancelAnimationFrame(view.settingsRaF)
             cancelAnimationFrame(view.gameRaF)
-
+            cancelAnimationFrame(view.endRaF)
             // Clear the Previous Screen
             ctx.clearRect(0,0,model.width,model.height)
             // Draw a new Screen
@@ -1417,8 +1678,10 @@ class GameView{
             // Assigning requestAnimationFrame value to a variable
             view.endRaF = requestAnimationFrame(endAnimationLoop)
         }
+
+
         // Request the AnimationLoop
-        requestAnimationFrame(endAnimationLoop)
+        endAnimationLoop()
     }
 
 }   
@@ -1430,10 +1693,7 @@ class GameView{
 class GameController{
     constructor(){
         
-        // Applies the preventDefault() behaviours of the key's and mouse from interfering with the rendering of the game
 
-            // window.addEventListener('mousedown',this.removeDefault)
-            // window.addEventListener('keydown',this.removeDefault)
                         
     }
     /**
@@ -1449,16 +1709,30 @@ class GameController{
             return false
        }
     } 
-    // /**
-    //  * @method removeDefault
-    //  * @param {EventTarget} event 
-    //  * Removes the event default behaviours from interfering with the DOM
-    //  */
-    // removeDefault(event){
-    //     // Prevent default behaviour from causing DOM default actions to override the game
-    //     event.preventDefault()
-    // }
-    
+
+    // Methods for User Settings
+
+    inputShipFillColor(event){
+        model.set_userColorStroke = event.target.value
+        model.saveUserSettings()
+    }
+
+    inputShipStokeColor(event){
+        model.set_userColorFill = event.target.value
+        model.saveUserSettings()
+    }
+
+    inputShipLaserColor(event){
+        model.set_userColorLaser = event.target.value
+        model.saveUserSettings()
+    }
+
+    inputShipThrust(event){
+        model.set_userThrust = event.target.value
+        model.saveUserSettings()
+    }
+
+
     // Methods to move the ship
     /**
      * @method spaceshipRotateClockwise
@@ -1541,6 +1815,21 @@ class GameController{
         //Display the start screen
         view.startScreen()
     }
+    clearMemory(){
+        if(confirm('Are you sure you want to do this, ALL GAME DATA WOULD BE ERASED')){
+            localStorage.clear()
+            // Clearing the previous game data
+            model = null
+            // clearing the values from the score displays
+            livesDisplay.innerText = ''
+            scoreDisplay.innerText = ''
+            currentHighScoreDisplay.innerText = ''
+            
+            //re-instantiating the game model 
+            model = new GameModel()
+
+        }
+    }
     // When the document loads we wish to start the game
     onLoad(){
         // Instantiating a new Game Model
@@ -1549,7 +1838,12 @@ class GameController{
         // Display the Start Screen
         return view.startScreen()
     }
-
+    openSettingsScreen(){
+        view.settingsScreen()
+    }
+    closeSettingsScreen(){
+        view.startScreen()
+    }
     // Event Handlers
 
     /**
