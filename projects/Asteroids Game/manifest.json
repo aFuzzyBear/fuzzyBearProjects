@@ -1,55 +1,70 @@
 {
  "manifest_version":3,   
  "name": "Asteroids Game",
+ "short_name":"Asteroids Game",
  "version":"version 3",
- "start_url":"Asteroids.html",
- "scope":"Asteroids.html",
+ "start_url":"./asteroids.html",
+ "scope":"./asteroids.html",
  "lang":"en-UK",
  "default_locale":"en",
+ "prefer_related_application": "true",
  "description":"A Replica of the timeless classic: Asteroids by Atari, recreated using vanilla JavasCript, using both the Objected Orientate Programming (OPP) and the Model-View-Controller programming designs patterns. written by aFuzzyBear-2020",
- "display":"fullscreen",
+ "display":"standalone",
+ "orientation":"landscape",
  "background":{
-     "page":["Asteroids.html"],
+     "page":["asteroids.html"],
      "scripts":["asteroidGame.js"]
  },
  "theme_color":"gold",
  "background_color":"black",
  "icons": [
   {
-   "src": "./assets/graphics/flavicons/android-icon-36x36.png",
-   "sizes": "36x36",
+   "src": "./assets/graphics/icons/Asteroid_Icon_36.png",
+   "sizes": "36x6",
    "type": "image\/png",
    "density": "0.75"
   },
   {
-   "src": "./assets/graphics/flavicons/android-icon-48x48.png",
-   "sizes": "48x48",
+   "src": "./assets/graphics/icons/Asteroid_Icon_48.png",
+   "sizes": "48x9",
    "type": "image\/png",
    "density": "1.0"
   },
   {
-   "src": "./assets/graphics/flavicons/android-icon-72x72.png",
-   "sizes": "72x72",
+   "src": "./assets/graphics/icons/Asteroid_Icon_72.png",
+   "sizes": "72x13",
    "type": "image\/png",
    "density": "1.5"
   },
   {
-   "src": "./assets/graphics/flavicons/android-icon-96x96.png",
-   "sizes": "96x96",
+   "src": "./assets/graphics/icons/Asteroid_Icon_96.png",
+   "sizes": "96x17",
    "type": "image\/png",
    "density": "2.0"
   },
   {
-   "src": "./assets/graphics/flavicons/android-icon-144x144.png",
-   "sizes": "144x144",
+   "src": "./assets/graphics/icons/Asteroid_Icon_144.png",
+   "sizes": "144x26",
    "type": "image\/png",
    "density": "3.0"
   },
   {
-   "src": "./assets/graphics/flavicons/android-icon-192x192.png",
-   "sizes": "192x192",
+   "src": "./assets/graphics/icons/Asteroid_Icon_192.png",
+   "sizes": "192x35",
    "type": "image\/png",
    "density": "4.0"
+  },
+  {
+   "src": "./assets/graphics/icons/Asteroid_Icon_512.png",
+   "sizes": "512x92",
+   "type": "image\/png",
+   "density": "4.0"
+  },
+  {
+    "src": "./assets/graphics/icons/maskable_icon_x1.png",
+    "sizes": "640x640",
+    "type": "image/png",
+    "purpose": "any maskable"
   }
 ]
 
