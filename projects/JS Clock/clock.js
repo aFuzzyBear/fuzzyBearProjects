@@ -5,7 +5,7 @@ const minuteHand = document.getElementById('minHand');
 const hourHand = document.getElementById('hourHand');
 
 function clock(){
-    const time = new Date();
+    const time = new Date().toLocaleTimeString();
 
     let secs = time.getSeconds();
     let secDeg= ((secs/60 ) * 360) + 90;
